@@ -1,6 +1,8 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { Plus, FolderPlus, ListTodo, TrendingUp } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const user = await currentUser();
   const firstName = user?.firstName || "there";
