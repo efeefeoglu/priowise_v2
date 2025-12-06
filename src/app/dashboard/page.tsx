@@ -21,7 +21,7 @@ export default async function Dashboard() {
                 Hi, {firstName} <span className="wave">👋</span>
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Let's get your strategy aligned and your roadmap prioritized. Start with a the First Assessment, then add your Product Features or upload an existing Product Roadmap to see the priorities come to life.
+                Let&apos;s get your strategy aligned and your roadmap prioritized. Start with a the First Assessment, then add your Product Features or upload an existing Product Roadmap to see the priorities come to life.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                  <button className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-black bg-brand-yellow hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 shadow-sm transition-colors">
