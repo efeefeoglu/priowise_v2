@@ -19,6 +19,7 @@ export default function AssessmentPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [currentQIndex, setCurrentQIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
 
@@ -30,6 +31,20 @@ export default function AssessmentPage() {
     scrollToBottom();
   }, [messages, isInitializing]);
 
+  const refreshAssessmentState = async () => {
+    try {
+      const response = await fetch('/api/assessment');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.currentQuestionIndex !== undefined) {
+          setCurrentQIndex(data.currentQuestionIndex);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh assessment state:', error);
+    }
+  };
+
   useEffect(() => {
     async function initializeChat() {
       if (!isLoaded || !user) return;
@@ -40,20 +55,21 @@ export default function AssessmentPage() {
             throw new Error('Failed to fetch assessment state');
         }
         const data = await response.json();
-        const currentQIndex = data.currentQuestionIndex || 0;
+        const initialIndex = data.currentQuestionIndex || 0;
+        setCurrentQIndex(initialIndex);
 
         const firstName = user.firstName || 'there';
 
-        if (currentQIndex === 0) {
+        if (initialIndex === 0) {
             // New User
             setMessages([{
                 id: 'welcome',
                 role: 'assistant',
                 content: `Hello ${firstName}! I'm here to guide you through your business assessment. We have ${questions.length} quick questions. Let's get started! \n\n **${questions[0].text}**`
             }]);
-        } else if (currentQIndex < questions.length) {
+        } else if (initialIndex < questions.length) {
             // Returning User - In Progress
-            const currentQ = questions[currentQIndex];
+            const currentQ = questions[initialIndex];
             setMessages([{
                 id: 'welcome-back',
                 role: 'assistant',
@@ -92,6 +108,21 @@ export default function AssessmentPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
+  };
+
+  const handleOptionClick = (option: string) => {
+    setInput(prev => {
+        const trimmed = prev.trim();
+        if (!trimmed) return option;
+
+        // Prevent duplicates
+        const existing = trimmed.split(',').map(s => s.trim());
+        if (existing.includes(option)) {
+            return trimmed;
+        }
+
+        return `${trimmed}, ${option}`;
+    });
   };
 
   const sendMessage = async (e: React.FormEvent) => {
@@ -164,6 +195,10 @@ export default function AssessmentPage() {
           ));
         }
       }
+
+      // Refresh state to update currentQuestionIndex for next turn
+      await refreshAssessmentState();
+
     } catch (error) {
       console.error('Error sending message:', error);
       // Optional: Add error message to chat
@@ -171,6 +206,10 @@ export default function AssessmentPage() {
       setIsLoading(false);
     }
   };
+
+  // Helper to get current question options
+  const currentQuestion = questions[currentQIndex];
+  const showOptions = !isLoading && currentQuestion?.options && currentQuestion?.allowMultiSelect;
 
   if (!isLoaded || isInitializing) {
      return (
@@ -214,6 +253,22 @@ export default function AssessmentPage() {
       </div>
 
       <div className="p-4 bg-white border-t border-gray-100">
+
+        {/* Options Suggestions */}
+        {showOptions && (
+            <div className="mb-4 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2">
+                {currentQuestion.options!.map((opt) => (
+                    <button
+                        key={opt}
+                        onClick={() => handleOptionClick(opt)}
+                        className="px-3 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-xs font-inter text-gray-700 hover:bg-brand-yellow hover:border-brand-yellow hover:text-black transition-colors"
+                    >
+                        {opt}
+                    </button>
+                ))}
+            </div>
+        )}
+
         <form onSubmit={sendMessage} className="flex gap-4 items-end">
            {/* File Upload Trigger */}
            <div className="relative">
@@ -242,7 +297,7 @@ export default function AssessmentPage() {
              <textarea
                value={input}
                onChange={handleInputChange}
-               placeholder="Type your answer..."
+               placeholder={showOptions ? "Select options above or type..." : "Type your answer..."}
                className="w-full p-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 resize-none font-inter"
                rows={1}
                onKeyDown={(e) => {
