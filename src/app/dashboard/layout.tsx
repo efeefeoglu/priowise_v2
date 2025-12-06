@@ -7,7 +7,8 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  Bell
+  Bell,
+  ClipboardList
 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -30,6 +31,10 @@ export default function DashboardLayout({
             <Link href="/dashboard" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md bg-brand-yellow/10 text-yellow-800">
                <LayoutDashboard className="mr-3 h-5 w-5 text-yellow-600" />
                Dashboard
+            </Link>
+            <Link href="/dashboard/assessment" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
+               <ClipboardList className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+               First Assessment
             </Link>
             <Link href="/dashboard/analytics" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
                <BarChart2 className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />

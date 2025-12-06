@@ -24,9 +24,12 @@ export default async function Dashboard() {
                 Let&apos;s get your strategy aligned and your roadmap prioritized. Start with a the First Assessment, then add your Product Features or upload an existing Product Roadmap to see the priorities come to life.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                 <button className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-black bg-brand-yellow hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 shadow-sm transition-colors">
+                <Link
+                  href="/dashboard/assessment"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-black bg-brand-yellow hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 shadow-sm transition-colors"
+                >
                   Start First Assessment
-                </button>
+                </Link>
                 <button className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow transition-colors">
                   Manage Features & Roadmap
                 </button>
