@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Loader2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { questions } from '@/lib/questions';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,15 +14,11 @@ interface Message {
 }
 
 export default function AssessmentPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "Hello! I'm here to guide you through your business assessment. We have 23 quick questions. Let's get started! \n\n **What is your Company Name?**"
-    }
-  ]);
+  const { user, isLoaded } = useUser();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
 
@@ -30,7 +28,61 @@ export default function AssessmentPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isInitializing]);
+
+  useEffect(() => {
+    async function initializeChat() {
+      if (!isLoaded || !user) return;
+
+      try {
+        const response = await fetch('/api/assessment');
+        if (!response.ok) {
+            throw new Error('Failed to fetch assessment state');
+        }
+        const data = await response.json();
+        const currentQIndex = data.currentQuestionIndex || 0;
+
+        const firstName = user.firstName || 'there';
+
+        if (currentQIndex === 0) {
+            // New User
+            setMessages([{
+                id: 'welcome',
+                role: 'assistant',
+                content: `Hello ${firstName}! I'm here to guide you through your business assessment. We have ${questions.length} quick questions. Let's get started! \n\n **${questions[0].text}**`
+            }]);
+        } else if (currentQIndex < questions.length) {
+            // Returning User - In Progress
+            const currentQ = questions[currentQIndex];
+            setMessages([{
+                id: 'welcome-back',
+                role: 'assistant',
+                content: `Welcome back ${firstName}! Let's pick up where we left off. \n\n **${currentQ.text}**`
+            }]);
+        } else {
+             // Completed
+             setMessages([{
+                id: 'completed',
+                role: 'assistant',
+                content: `Welcome back ${firstName}! You have already completed the assessment. Feel free to review your answers or start a new one if available.`
+             }]);
+        }
+
+      } catch (error) {
+        console.error("Failed to initialize chat:", error);
+        // Fallback
+        setMessages([{
+            id: 'error-fallback',
+            role: 'assistant',
+            content: "Hello! I'm having trouble retrieving your history. Let's try to start anyway. **What is your Company Name?**"
+        }]);
+      } finally {
+        setIsInitializing(false);
+      }
+    }
+
+    initializeChat();
+  }, [isLoaded, user]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -119,6 +171,15 @@ export default function AssessmentPage() {
       setIsLoading(false);
     }
   };
+
+  if (!isLoaded || isInitializing) {
+     return (
+        <div className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto items-center justify-center space-y-4">
+             <Loader2 className="w-8 h-8 animate-spin text-brand-yellow" />
+             <p className="text-gray-500 font-inter">Loading assessment...</p>
+        </div>
+     );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto">
