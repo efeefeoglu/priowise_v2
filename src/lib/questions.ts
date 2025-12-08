@@ -9,7 +9,7 @@ export interface Question {
 }
 
 export const questions: Question[] = [
-  {"id": "q1", "text": "What is your Company Name?", "section": "Company Overview", "type": "text", "required": true},
+  {"id": "q1", "text": "What is your Company Name? (Feel free to upload a file to help me answer questions automatically)", "section": "Company Overview", "type": "text", "required": true},
   {"id": "q2", "text": "What is your Website?", "section": "Company Overview", "type": "text", "required": true},
   {"id": "q3", "text": "Which industry best describes your company?", "section": "Company Overview", "type": "select", "required": true, "options": ["eCommerce / Marketplace (B2C/B2B)", "AdTech / MarTech Platforms", "Fintech / Payments", "Healthcare / MedTech / Wellness", "Logistics / Delivery / Mobility", "SaaS / Productivity Tools", "EdTech / Education Platforms", "EV Charging / Energy / IoT", "LegalTech / Compliance", "Travel / Booking Systems", "Social Media / Content Platforms", "HR Tech / Recruiting Platforms", "Gaming / Sports Betting", "PropTech / Real Estate", "ClimateTech / Sustainability Platforms", "AI/ML Platforms", "Creator Eco", "Other"], "allowMultiSelect": true},
   {"id": "q4", "text": "What is your Business Model?", "section": "Company Overview", "type": "select", "required": true, "options": ["B2C", "B2B", "Hybrid"], "allowMultiSelect": true},
