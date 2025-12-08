@@ -1,4 +1,5 @@
-import pdf from 'pdf-parse';
+// We import directly from lib to avoid the "test data" file read in the main index.js of pdf-parse
+import pdf from 'pdf-parse/lib/pdf-parse.js';
 import mammoth from 'mammoth';
 
 export async function parseFile(buffer: Buffer, fileType: string): Promise<string> {
