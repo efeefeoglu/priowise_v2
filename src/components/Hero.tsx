@@ -4,7 +4,16 @@ import { ArrowRight } from "lucide-react";
 export function Hero() {
   return (
     <div className="relative bg-white pt-24 pb-16 overflow-hidden sm:pt-32 lg:pt-40 lg:pb-24">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 h-full w-[40%] max-w-3xl hidden lg:block pointer-events-none select-none">
+        <Image
+          src="/header.png"
+          alt=""
+          fill
+          className="object-contain object-right"
+          priority
+        />
+      </div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center z-10">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-rubik font-bold tracking-tight text-gray-900 mb-6 max-w-4xl">
           Master Your Product Strategy. <br className="hidden sm:block" />
           Align Your Team.
@@ -24,19 +33,6 @@ export function Hero() {
           </button>
         </div>
 
-        <div className="relative w-full max-w-5xl mx-auto mt-8">
-           {/* Fallback to simple div if image fails, but we try to load the provided asset */}
-           <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-100 bg-gray-50">
-              <Image
-                src="/homepage.png"
-                alt="Priowise Dashboard Preview"
-                width={1200}
-                height={800}
-                className="w-full h-auto object-cover"
-                priority
-              />
-           </div>
-        </div>
       </div>
     </div>
   );
