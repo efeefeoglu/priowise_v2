@@ -211,6 +211,9 @@ export default function AssessmentPage() {
   const currentQuestion = questions[currentQIndex];
   const showOptions = !isLoading && currentQuestion?.options && currentQuestion?.allowMultiSelect;
 
+  // Calculate progress
+  const progress = Math.min(Math.round((currentQIndex / questions.length) * 100), 100);
+
   if (!isLoaded || isInitializing) {
      return (
         <div className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto items-center justify-center space-y-4">
@@ -222,6 +225,20 @@ export default function AssessmentPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto">
+      {/* Progress Bar */}
+      <div className="px-6 pt-6 pb-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs font-inter font-medium text-gray-500">Progress</span>
+          <span className="text-xs font-inter font-medium text-brand-yellow-darker">{progress}%</span>
+        </div>
+        <div className="w-full bg-gray-100 rounded-full h-2.5">
+          <div
+            className="bg-brand-yellow h-2.5 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.map((m) => (
           <div
