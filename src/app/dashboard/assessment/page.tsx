@@ -22,6 +22,8 @@ export default function AssessmentPage() {
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  // State to hold extracted answers from file uploads
+  const [extractedContext, setExtractedContext] = useState<Record<string, string>>({});
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -125,6 +127,16 @@ export default function AssessmentPage() {
     });
   };
 
+  // Helper to convert File to Base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() && !file) return;
@@ -138,22 +150,31 @@ export default function AssessmentPage() {
 
     // Optimistic update
     setMessages(prev => [...prev, userMessage]);
+
+    // Prepare Data Payload
     const currentInput = input;
     const currentFile = file;
 
     setInput('');
     setFile(null);
 
-    let fileContent: string | null = null;
     let fileData = null;
 
     if (currentFile) {
-        if (currentFile.type.startsWith('text/') || currentFile.type === 'application/json') {
-             fileContent = await currentFile.text();
-        } else {
-             fileContent = `[File Uploaded: ${currentFile.name} - Content not extracted in client]`;
+        try {
+            const base64Content = await fileToBase64(currentFile);
+            // Remove data URL prefix (e.g., "data:application/pdf;base64,") to get just the base64 string
+            const base64Data = base64Content.split(',')[1];
+
+            fileData = {
+                name: currentFile.name,
+                type: currentFile.type,
+                content: base64Data
+            };
+        } catch (error) {
+            console.error("Error reading file:", error);
+            fileData = { name: currentFile.name, type: currentFile.type, content: "" };
         }
-        fileData = { name: currentFile.name, type: currentFile.type, fileContent };
     }
 
     try {
@@ -164,7 +185,10 @@ export default function AssessmentPage() {
         },
         body: JSON.stringify({
           messages: [...messages, userMessage],
-          data: fileData ? { ...fileData } : undefined
+          data: {
+             file: fileData,
+             extractedContext: extractedContext // Pass current extracted answers
+          }
         }),
       });
 
@@ -183,15 +207,46 @@ export default function AssessmentPage() {
       const assistantId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
 
+      // Buffer for detecting delimiters
+      let buffer = '';
+      const DELIMITER_START = ':::JSON_START:::';
+      const DELIMITER_END = ':::JSON_END:::';
+      const BUFFER_SIZE = 50; // Keep a tail buffer large enough to catch the start token
+
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
-          assistantContent += chunk;
+          buffer += chunk;
+
+          // Check for complete delimiter block in the entire accumulated buffer
+          // (Inefficient for huge streams, but streams here are short chat messages)
+          // To optimize, we could only check the tail, but simpler is better for now given constraints.
+
+          let displayContent = buffer;
+          const startIndex = buffer.indexOf(DELIMITER_START);
+          const endIndex = buffer.indexOf(DELIMITER_END);
+
+          if (startIndex !== -1 && endIndex !== -1) {
+              // Extract JSON
+              const jsonString = buffer.substring(startIndex + DELIMITER_START.length, endIndex);
+              try {
+                  const newExtractedData = JSON.parse(jsonString);
+                  setExtractedContext(prev => ({ ...prev, ...newExtractedData }));
+              } catch (err) {
+                  console.error('Failed to parse extracted context JSON', err);
+              }
+              // Strip from display
+              displayContent = buffer.substring(0, startIndex) + buffer.substring(endIndex + DELIMITER_END.length);
+          } else if (startIndex !== -1 && endIndex === -1) {
+              // Partial delimiter found (start found, end not yet)
+              // We should hide the content starting from DELIMITER_START to avoid flash
+              displayContent = buffer.substring(0, startIndex);
+          }
 
           setMessages(prev => prev.map(m =>
-            m.id === assistantId ? { ...m, content: assistantContent } : m
+            m.id === assistantId ? { ...m, content: displayContent } : m
           ));
         }
       }
@@ -294,7 +349,7 @@ export default function AssessmentPage() {
                id="file-upload"
                className="hidden"
                onChange={onFileChange}
-               accept=".txt,.md,.json,.csv" // Restricting to text for this prototype based on client-side reading
+               accept=".pdf,.docx,.txt,.md,.json,.csv" // Expanded extensions
              />
              <label
                htmlFor="file-upload"
