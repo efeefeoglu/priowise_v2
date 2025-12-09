@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip, Loader2 } from 'lucide-react';
+import { Send, Paperclip, Loader2, X, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { questions } from '@/lib/questions';
 
@@ -13,6 +13,8 @@ interface Message {
   content: string;
 }
 
+type UploadStatus = 'idle' | 'uploading' | 'extracting' | 'success' | 'error';
+
 export default function AssessmentPage() {
   const { user, isLoaded } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,8 +23,11 @@ export default function AssessmentPage() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  // State to hold extracted answers from file uploads
+
+  // File Upload State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
+  const [uploadMessage, setUploadMessage] = useState('');
   const [extractedContext, setExtractedContext] = useState<Record<string, string>>({});
 
   const scrollToBottom = () => {
@@ -104,7 +109,60 @@ export default function AssessmentPage() {
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      setSelectedFile(e.target.files[0]);
+      setUploadStatus('idle');
+      setUploadMessage('');
+    }
+  };
+
+  const handleClearFile = () => {
+    setSelectedFile(null);
+    setUploadStatus('idle');
+    setUploadMessage('');
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+
+    setUploadStatus('uploading');
+    setUploadMessage('Uploading file...');
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+        setUploadStatus('extracting');
+        setUploadMessage('Analyzing document...');
+
+        const response = await fetch('/api/assessment/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const data = await response.json();
+
+        // Merge with existing context
+        setExtractedContext(prev => ({ ...prev, ...data }));
+
+        setUploadStatus('success');
+        const count = Object.keys(data).length;
+        setUploadMessage(`Successfully analyzed "${selectedFile.name}". Found answers for ${count} questions.`);
+
+        // Clear file after short delay so user sees success
+        setTimeout(() => {
+             setSelectedFile(null);
+             setUploadStatus('idle');
+             setUploadMessage('');
+        }, 3000);
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        setUploadStatus('error');
+        setUploadMessage('Failed to process file. Please try again.');
     }
   };
 
@@ -127,19 +185,9 @@ export default function AssessmentPage() {
     });
   };
 
-  // Helper to convert File to Base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
-  };
-
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() && !file) return;
+    if (!input.trim()) return;
 
     setIsLoading(true);
     const userMessage: Message = {
@@ -152,30 +200,7 @@ export default function AssessmentPage() {
     setMessages(prev => [...prev, userMessage]);
 
     // Prepare Data Payload
-    const currentInput = input;
-    const currentFile = file;
-
     setInput('');
-    setFile(null);
-
-    let fileData = null;
-
-    if (currentFile) {
-        try {
-            const base64Content = await fileToBase64(currentFile);
-            // Remove data URL prefix (e.g., "data:application/pdf;base64,") to get just the base64 string
-            const base64Data = base64Content.split(',')[1];
-
-            fileData = {
-                name: currentFile.name,
-                type: currentFile.type,
-                content: base64Data
-            };
-        } catch (error) {
-            console.error("Error reading file:", error);
-            fileData = { name: currentFile.name, type: currentFile.type, content: "" };
-        }
-    }
 
     try {
       const response = await fetch('/api/chat', {
@@ -186,8 +211,8 @@ export default function AssessmentPage() {
         body: JSON.stringify({
           messages: [...messages, userMessage],
           data: {
-             file: fileData,
-             extractedContext: extractedContext // Pass current extracted answers
+             // We no longer send file data here, only the accumulated context
+             extractedContext: extractedContext
           }
         }),
       });
@@ -207,46 +232,16 @@ export default function AssessmentPage() {
       const assistantId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
 
-      // Buffer for detecting delimiters
-      let buffer = '';
-      const DELIMITER_START = ':::JSON_START:::';
-      const DELIMITER_END = ':::JSON_END:::';
-      const BUFFER_SIZE = 50; // Keep a tail buffer large enough to catch the start token
-
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
+          assistantContent += chunk;
 
-          // Check for complete delimiter block in the entire accumulated buffer
-          // (Inefficient for huge streams, but streams here are short chat messages)
-          // To optimize, we could only check the tail, but simpler is better for now given constraints.
-
-          let displayContent = buffer;
-          const startIndex = buffer.indexOf(DELIMITER_START);
-          const endIndex = buffer.indexOf(DELIMITER_END);
-
-          if (startIndex !== -1 && endIndex !== -1) {
-              // Extract JSON
-              const jsonString = buffer.substring(startIndex + DELIMITER_START.length, endIndex);
-              try {
-                  const newExtractedData = JSON.parse(jsonString);
-                  setExtractedContext(prev => ({ ...prev, ...newExtractedData }));
-              } catch (err) {
-                  console.error('Failed to parse extracted context JSON', err);
-              }
-              // Strip from display
-              displayContent = buffer.substring(0, startIndex) + buffer.substring(endIndex + DELIMITER_END.length);
-          } else if (startIndex !== -1 && endIndex === -1) {
-              // Partial delimiter found (start found, end not yet)
-              // We should hide the content starting from DELIMITER_START to avoid flash
-              displayContent = buffer.substring(0, startIndex);
-          }
-
+          // Simple stream update (no hidden blocks expected from chat anymore for context)
           setMessages(prev => prev.map(m =>
-            m.id === assistantId ? { ...m, content: displayContent } : m
+            m.id === assistantId ? { ...m, content: assistantContent } : m
           ));
         }
       }
@@ -326,6 +321,74 @@ export default function AssessmentPage() {
 
       <div className="p-4 bg-white border-t border-gray-100">
 
+        {/* File Upload / Status Area */}
+        {selectedFile && (
+           <div className="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 overflow-hidden">
+                 <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-gray-400" />
+                 </div>
+                 <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-medium text-gray-900 truncate block">{selectedFile.name}</span>
+                    <span className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(0)} KB</span>
+                 </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                 {uploadStatus === 'idle' && (
+                    <button
+                       onClick={handleFileUpload}
+                       className="px-3 py-1.5 bg-brand-yellow text-black text-xs font-medium rounded-lg hover:brightness-105 transition-all"
+                    >
+                       Upload
+                    </button>
+                 )}
+                 {uploadStatus === 'uploading' && (
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                       <Loader2 className="w-3 h-3 animate-spin" /> Uploading...
+                    </span>
+                 )}
+                 {uploadStatus === 'extracting' && (
+                    <span className="text-xs text-brand-yellow-darker flex items-center gap-1">
+                       <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...
+                    </span>
+                 )}
+                 {uploadStatus === 'success' && (
+                    <span className="text-xs text-green-600 flex items-center gap-1 font-medium">
+                       <CheckCircle className="w-3 h-3" /> Done
+                    </span>
+                 )}
+                 {uploadStatus === 'error' && (
+                    <span className="text-xs text-red-500 flex items-center gap-1 font-medium">
+                       <AlertCircle className="w-3 h-3" /> Error
+                    </span>
+                 )}
+
+                 <button
+                   onClick={handleClearFile}
+                   className="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-200 transition-colors"
+                   disabled={uploadStatus === 'uploading' || uploadStatus === 'extracting'}
+                 >
+                    <X className="w-4 h-4" />
+                 </button>
+              </div>
+           </div>
+        )}
+
+        {/* Persistent Success Message if file was cleared automatically but we want to show it?
+            Currently logic clears it. Let's keep the toast logic inside the file area or add a separate toast area.
+            For now, user sees "Done" then it disappears.
+            If we want a persistent note that context is loaded, we could add a small badge.
+        */}
+        {Object.keys(extractedContext).length > 0 && !selectedFile && (
+             <div className="mb-2 px-2 flex items-center gap-2">
+                 <span className="text-xs text-green-600 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    {Object.keys(extractedContext).length} answers loaded from context
+                 </span>
+             </div>
+        )}
+
         {/* Options Suggestions */}
         {showOptions && (
             <div className="mb-4 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2">
@@ -353,16 +416,11 @@ export default function AssessmentPage() {
              />
              <label
                htmlFor="file-upload"
-               className={`p-3 rounded-full cursor-pointer transition-colors ${file ? 'bg-brand-yellow text-black' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+               className={`p-3 rounded-full cursor-pointer transition-colors ${selectedFile ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                title="Upload context file"
              >
                 <Paperclip className="w-5 h-5" />
              </label>
-             {file && (
-                <div className="absolute bottom-full mb-2 left-0 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                    {file.name}
-                </div>
-             )}
            </div>
 
            <div className="flex-1 relative">
@@ -381,7 +439,7 @@ export default function AssessmentPage() {
              />
              <button
                type="submit"
-               disabled={isLoading || (!input.trim() && !file)}
+               disabled={isLoading || !input.trim()}
                className="absolute right-2 bottom-2 p-2 bg-brand-yellow text-black rounded-lg hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
              >
                <Send className="w-4 h-4" />
