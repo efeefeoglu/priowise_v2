@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "sed -i 's/new Buffer(/Buffer.from(/g' node_modules/pdf-parse/lib/pdf.js/v2.0.550/build/pdf.js || true"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.35.6",
