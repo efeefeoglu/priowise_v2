@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip, Loader2, X, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, Paperclip, Loader2, X, FileText, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { questions } from '@/lib/questions';
 
@@ -22,6 +22,7 @@ export default function AssessmentPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // File Upload State
@@ -30,13 +31,17 @@ export default function AssessmentPage() {
   const [uploadMessage, setUploadMessage] = useState('');
   const [extractedContext, setExtractedContext] = useState<Record<string, string>>({});
 
+  // Submission State
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isInitializing]);
+  }, [messages, isInitializing, currentQIndex]);
 
   const refreshAssessmentState = async () => {
     try {
@@ -45,6 +50,9 @@ export default function AssessmentPage() {
         const data = await response.json();
         if (data.currentQuestionIndex !== undefined) {
           setCurrentQIndex(data.currentQuestionIndex);
+        }
+        if (data.answers) {
+          setAnswers(data.answers);
         }
       }
     } catch (error) {
@@ -64,6 +72,9 @@ export default function AssessmentPage() {
         const data = await response.json();
         const initialIndex = data.currentQuestionIndex || 0;
         setCurrentQIndex(initialIndex);
+        if (data.answers) {
+          setAnswers(data.answers);
+        }
 
         const firstName = user.firstName || 'there';
 
@@ -87,7 +98,7 @@ export default function AssessmentPage() {
              setMessages([{
                 id: 'completed',
                 role: 'assistant',
-                content: `Welcome back ${firstName}! You have already completed the assessment. Feel free to review your answers or start a new one if available.`
+                content: `Welcome back ${firstName}! You have already completed the assessment. Below you can review your answers. Type in the chat if you'd like to change anything, or click Submit when ready.`
              }]);
         }
 
@@ -211,7 +222,6 @@ export default function AssessmentPage() {
         body: JSON.stringify({
           messages: [...messages, userMessage],
           data: {
-             // We no longer send file data here, only the accumulated context
              extractedContext: extractedContext
           }
         }),
@@ -239,7 +249,7 @@ export default function AssessmentPage() {
           const chunk = decoder.decode(value, { stream: true });
           assistantContent += chunk;
 
-          // Simple stream update (no hidden blocks expected from chat anymore for context)
+          // Simple stream update
           setMessages(prev => prev.map(m =>
             m.id === assistantId ? { ...m, content: assistantContent } : m
           ));
@@ -251,15 +261,53 @@ export default function AssessmentPage() {
 
     } catch (error) {
       console.error('Error sending message:', error);
-      // Optional: Add error message to chat
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSubmit = async () => {
+    if (!user?.primaryEmailAddress?.emailAddress) {
+       alert('Could not find user email');
+       return;
+    }
+
+    setIsSubmitting(true);
+    try {
+       const payload = {
+          user: {
+             id: user.id,
+             email: user.primaryEmailAddress.emailAddress,
+             firstName: user.firstName,
+             lastName: user.lastName,
+          },
+          answers: answers
+       };
+
+       const res = await fetch('https://hook.eu2.make.com/xfcr88h9dbk8uxrwzrdpa39g7bv9bn9p', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+       });
+
+       if (!res.ok) throw new Error('Submission failed');
+
+       setSubmitSuccess(true);
+       // Scroll to success message
+       setTimeout(() => scrollToBottom(), 100);
+
+    } catch (error) {
+       console.error('Submission error:', error);
+       alert('Failed to submit. Please try again.');
+    } finally {
+       setIsSubmitting(false);
+    }
+  };
+
   // Helper to get current question options
   const currentQuestion = questions[currentQIndex];
-  const showOptions = !isLoading && currentQuestion?.options && currentQuestion?.allowMultiSelect;
+  const isCompleted = currentQIndex >= questions.length;
+  const showOptions = !isLoading && !isCompleted && currentQuestion?.options && currentQuestion?.allowMultiSelect;
 
   // Calculate progress
   const progress = Math.min(Math.round((currentQIndex / questions.length) * 100), 100);
@@ -308,6 +356,63 @@ export default function AssessmentPage() {
             </div>
           </div>
         ))}
+
+        {/* REVIEW SECTION */}
+        {isCompleted && (
+           <div className="w-full max-w-3xl mx-auto mt-8 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="p-6 border-b border-gray-100 bg-gray-50">
+                     <h3 className="text-lg font-bold font-rubik text-gray-900">Review Your Answers</h3>
+                     <p className="text-sm text-gray-500 mt-1">Review your answers below. You can chat to update any answer.</p>
+                  </div>
+                  <div className="divide-y divide-gray-100">
+                     {questions.map((q, idx) => (
+                        <div key={q.id} className="p-4 hover:bg-gray-50 transition-colors group">
+                           <div className="flex justify-between items-start gap-4">
+                              <div className="flex-1">
+                                 <p className="text-xs font-medium text-gray-400 mb-1">Question {idx + 1}</p>
+                                 <p className="text-sm font-medium text-gray-900 mb-2">{q.text}</p>
+                                 <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                    {answers[q.id] || <span className="text-gray-400 italic">Not answered</span>}
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+                  <div className="p-6 bg-gray-50 border-t border-gray-100 flex flex-col items-center gap-4">
+                     {submitSuccess ? (
+                        <div className="w-full p-4 bg-green-50 border border-green-200 rounded-xl flex flex-col items-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                            </div>
+                            <h4 className="text-green-800 font-medium mb-1">Assessment Submitted!</h4>
+                            <p className="text-green-700 text-sm">
+                               Great job! You can now proceed to the next step.
+                            </p>
+                        </div>
+                     ) : (
+                        <button
+                           onClick={handleSubmit}
+                           disabled={isSubmitting}
+                           className="w-full md:w-auto px-8 py-3 bg-brand-yellow text-black font-medium rounded-xl hover:brightness-105 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                           {isSubmitting ? (
+                              <>
+                                 <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+                              </>
+                           ) : (
+                              <>
+                                 Submit Assessment <ArrowRight className="w-4 h-4" />
+                              </>
+                           )}
+                        </button>
+                     )}
+                  </div>
+               </div>
+           </div>
+        )}
+
         {isLoading && (
            <div className="flex justify-start">
              <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center gap-2">
@@ -427,7 +532,7 @@ export default function AssessmentPage() {
              <textarea
                value={input}
                onChange={handleInputChange}
-               placeholder={showOptions ? "Select options above or type..." : "Type your answer..."}
+               placeholder={showOptions ? "Select options above or type..." : isCompleted ? "Type to update an answer..." : "Type your answer..."}
                className="w-full p-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 resize-none font-inter"
                rows={1}
                onKeyDown={(e) => {

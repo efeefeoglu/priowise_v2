@@ -25,15 +25,75 @@ export async function POST(req: NextRequest) {
     const currentQIndex = assessment.currentQuestionIndex;
     const isCompleted = assessment.status === 'completed';
 
-    if (isCompleted) {
-        return new Response("Assessment already completed.", { status: 200 });
-    }
-
     const llm = new ChatOpenAI({
       model: 'gpt-4o-mini',
       temperature: 0,
       apiKey: process.env.OPENAI_API_KEY
     });
+
+    // ------------------------------------------------------------------
+    // HANDLE COMPLETED STATE (Review Mode)
+    // ------------------------------------------------------------------
+    if (isCompleted) {
+        const reviewPrompt = `
+        You are a helpful assistant assisting a user who has just completed their business assessment.
+        The user is reviewing their answers and may want to update them.
+
+        Current Answers:
+        ${JSON.stringify(assessment.answers, null, 2)}
+
+        Questions Reference:
+        ${questions.map(q => `${q.id}: ${q.text}`).join('\n')}
+
+        User Input: "${lastMessage.content}"
+
+        Task:
+        1. Determine if the user is asking to update a specific question.
+        2. If YES, identify the Question ID and the New Answer.
+        3. If NO, just chat helpfully.
+
+        Return JSON:
+        {
+           "isUpdate": boolean,
+           "questionId": string | null,
+           "newAnswer": string | null,
+           "responseMessage": string
+        }
+
+        If it is an update, "responseMessage" should confirm the update (e.g., "I've updated your Company Name to 'Acme Inc'.").
+        If not, "responseMessage" should be a normal helpful reply.
+        `;
+
+        const reviewRes = await llm.invoke([
+            new SystemMessage(reviewPrompt),
+        ]);
+
+        let reviewData = { isUpdate: false, questionId: null, newAnswer: null, responseMessage: "I'm here to help." };
+        try {
+            const clean = (reviewRes.content as string).replace(/```json/g, '').replace(/```/g, '').trim();
+            reviewData = JSON.parse(clean);
+        } catch (e) {
+            console.error("Failed to parse review logic", e);
+            // Fallback to simple chat
+            const fallbackStream = await llm.stream([
+                new SystemMessage("You are a helpful assistant. The user has completed the assessment. Respond to: " + lastMessage.content)
+            ]);
+            return new Response(iteratorToStream(fallbackStream));
+        }
+
+        if (reviewData.isUpdate && reviewData.questionId && reviewData.newAnswer) {
+             const updatedAnswers = { ...assessment.answers, [reviewData.questionId]: reviewData.newAnswer };
+             await updateAssessment(user.id, { answers: updatedAnswers });
+        }
+
+        // Return the response message as a stream
+        const stream = await llm.stream([new SystemMessage(`Just repeat this exactly: ${reviewData.responseMessage}`)]);
+        return new Response(iteratorToStream(stream));
+    }
+
+    // ------------------------------------------------------------------
+    // HANDLE IN-PROGRESS STATE
+    // ------------------------------------------------------------------
 
     // Normal Text Flow
     const currentQ = questions[currentQIndex];
