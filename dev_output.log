@@ -5,9 +5,12 @@
    ▲ Next.js 16.0.7 (Turbopack)
    - Local:         http://localhost:3000
    - Network:       http://192.168.0.2:3000
+   - Environments: .env.local
 
  ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
+ ✓ Ready in 1866ms
+ ⨯ Error: @clerk/nextjs: Missing secretKey. You can get your key at https://dashboard.clerk.com/last-active?path=api-keys.
+    at ignore-listed frames
+ GET /dashboard/roadmap 404 in 2.3s (compile: -210974µs, proxy.ts: 2.3s, render: 224ms)
+ ○ Compiling /_not-found/page ...
+   Reload env: .env.local
