@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
     // Filter by Email field in Airtable
     const records = await table.select({
       filterByFormula: `{Email} = '${email}'`,
-      sort: [{ field: 'Created', direction: 'desc' }] // Optional: sort by creation time if available, or name
     }).all();
 
     const formattedRecords = records.map((record) => ({
