@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
-import { table } from '@/lib/airtable';
+import { table, base } from '@/lib/airtable';
 
 // Force dynamic to ensure we always fetch fresh data and have access to currentUser
 export const dynamic = 'force-dynamic';
@@ -47,6 +47,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Name and Description are required' }, { status: 400 });
     }
 
+    // Lookup the user in the Users table (tblXIJvbUjYjUNN7T)
+    const usersTable = base('tblXIJvbUjYjUNN7T');
+    const userRecords = await usersTable.select({
+      filterByFormula: `{Email} = '${email}'`,
+      maxRecords: 1,
+    }).firstPage();
+
+    if (userRecords.length === 0) {
+      return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
+    }
+
+    const userId = userRecords[0].id;
+
     const newRecord = await table.create([
       {
         fields: {
@@ -55,7 +68,7 @@ export async function POST(req: NextRequest) {
           Tag: Tag || '', // Ensure it's a string
           Status: 'Created',
           Source: 'Manual',
-          Email: email,
+          Users: [userId],
         },
       },
     ]);
