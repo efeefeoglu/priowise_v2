@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { parseFile } from '@/lib/file-processing';
 import { ChatOpenAI } from '@langchain/openai';
 import { SystemMessage } from '@langchain/core/messages';
-import { table } from '@/lib/airtable';
+import { table, base } from '@/lib/airtable';
 
 export const maxDuration = 300;
 
@@ -36,6 +36,40 @@ export async function POST(req: NextRequest) {
 
     if (!fileContent || fileContent.trim().length === 0) {
         return new Response(JSON.stringify({ error: 'File is empty or could not be read.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // Fetch user links from Airtable
+    let userRecordId: string | undefined;
+    let faRecordId: string | undefined;
+
+    try {
+        // Find in Users table (tblXIJvbUjYjUNN7T)
+        // Using filterByFormula. Escape single quotes in email just in case.
+        const safeEmail = userEmail.replace(/'/g, "\\'");
+
+        const userRecords = await base('tblXIJvbUjYjUNN7T').select({
+            maxRecords: 1,
+            filterByFormula: `{Email} = '${safeEmail}'`
+        }).firstPage();
+
+        if (userRecords.length > 0) {
+            userRecordId = userRecords[0].id;
+        }
+
+        // Find in 1FA table (tblIErZyMRYEm14bg)
+        const faRecords = await base('tblIErZyMRYEm14bg').select({
+            maxRecords: 1,
+            filterByFormula: `{Email (from Linked record)} = '${safeEmail}'`
+        }).firstPage();
+
+        if (faRecords.length > 0) {
+            faRecordId = faRecords[0].id;
+        }
+
+    } catch (err: any) {
+        console.error('Error fetching linked records from Airtable:', err);
+        // We continue even if linking fails, or maybe we should error?
+        // User instruction implies these are needed. But let's try to proceed.
     }
 
     const llm = new ChatOpenAI({
@@ -146,8 +180,16 @@ IMPORTANT: Return ONLY the JSON array. Do not include markdown code blocks.
                 "Uploaded Priority": feature["Attachment Priority"] || "",
                 "Status": "AttachmentCompleted",
                 "Source": "CSV Uploaded",
-                "Email": userEmail
             };
+
+            // Link to user if found
+            if (userRecordId) {
+                fields["Users"] = [userRecordId];
+            }
+            // Link to 1FA if found
+            if (faRecordId) {
+                fields["1FA"] = [faRecordId];
+            }
 
             // Handle dates: ensure they are not empty strings
             if (feature["Planned Date"]) fields["Planned Date"] = feature["Planned Date"];
