@@ -7,6 +7,11 @@ import { table, base } from '@/lib/airtable';
 
 export const maxDuration = 300;
 
+function isValidDate(dateString: string): boolean {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) && dateString.trim() !== '';
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await currentUser();
@@ -191,9 +196,13 @@ IMPORTANT: Return ONLY the JSON array. Do not include markdown code blocks.
                 fields["1FA"] = [faRecordId];
             }
 
-            // Handle dates: ensure they are not empty strings
-            if (feature["Planned Date"]) fields["Planned Date"] = feature["Planned Date"];
-            if (feature["Finish Date"]) fields["Finish Date"] = feature["Finish Date"];
+            // Handle dates: ensure they are not empty strings and are valid dates
+            if (feature["Planned Date"] && isValidDate(feature["Planned Date"])) {
+                fields["Planned Date"] = feature["Planned Date"];
+            }
+            if (feature["Finish Date"] && isValidDate(feature["Finish Date"])) {
+                fields["Finish Date"] = feature["Finish Date"];
+            }
 
             return { fields };
         });

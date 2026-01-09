@@ -134,6 +134,10 @@ export default function RoadmapUploadModal({
             )}
           </div>
 
+          <p className="text-xs text-gray-400 text-center italic">
+            Note: Processing large files may take a few minutes.
+          </p>
+
           {error && (
             <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg flex items-center gap-2">
               <AlertCircle size={16} />
