@@ -14,7 +14,14 @@ export async function parseFile(buffer: Buffer, fileType: string): Promise<strin
     ) {
       const result = await mammoth.extractRawText({ buffer });
       return result.value;
-    } else if (fileType === 'text/plain' || fileType === 'application/json' || fileType === 'text/markdown') {
+    } else if (
+      fileType === 'text/plain' ||
+      fileType === 'application/json' ||
+      fileType === 'text/markdown' ||
+      fileType === 'text/csv' ||
+      fileType === 'application/csv' ||
+      fileType === 'application/vnd.ms-excel' // Sometimes CSVs are uploaded with this type
+    ) {
         return buffer.toString('utf-8');
     } else {
       // Fallback for types that might be text but mismatched

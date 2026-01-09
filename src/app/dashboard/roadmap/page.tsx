@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload } from 'lucide-react';
 import RoadmapFormModal from '@/components/roadmap/RoadmapFormModal';
+import RoadmapUploadModal from '@/components/roadmap/RoadmapUploadModal';
 
 interface RoadmapRecord {
   id: string;
@@ -25,6 +26,7 @@ export default function RoadmapPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingRecord, setEditingRecord] = useState<RoadmapRecord | null>(null);
 
@@ -119,13 +121,22 @@ export default function RoadmapPage() {
           <h1 className="text-2xl font-bold font-rubik text-gray-900">Feature Roadmap</h1>
           <p className="text-gray-500 mt-1">Manage and track your feature requests.</p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg hover:bg-yellow-400 transition-colors shadow-sm"
-        >
-          <Plus size={20} />
-          Add Feature
-        </button>
+        <div className="flex gap-2">
+            <button
+            onClick={() => setIsUploadModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            >
+            <Upload size={20} />
+            Upload CSV
+            </button>
+            <button
+            onClick={handleCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg hover:bg-yellow-400 transition-colors shadow-sm"
+            >
+            <Plus size={20} />
+            Add Feature
+            </button>
+        </div>
       </div>
 
       {error && (
@@ -229,6 +240,14 @@ export default function RoadmapPage() {
             : null
         }
         isSubmitting={isSubmitting}
+      />
+
+      <RoadmapUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={() => {
+            fetchRecords();
+        }}
       />
     </div>
   );
