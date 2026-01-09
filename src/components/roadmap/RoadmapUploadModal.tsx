@@ -47,12 +47,21 @@ export default function RoadmapUploadModal({
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to upload file');
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        // If response is not JSON (e.g. fatal server error html)
+        data = null;
       }
 
-      const data = await res.json();
-      if (data.success) {
+      if (!res.ok) {
+        const errorDetails = data?.details ? ` (${data.details})` : '';
+        const errorMessage = data?.error || 'Failed to upload file';
+        throw new Error(`${errorMessage}${errorDetails}`);
+      }
+
+      if (data && data.success) {
         onSuccess();
         onClose();
         setFile(null); // Reset
@@ -61,7 +70,7 @@ export default function RoadmapUploadModal({
       }
     } catch (err: any) {
       console.error(err);
-      setError('An error occurred during upload. Please try again.');
+      setError(err.message || 'An error occurred during upload. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -128,7 +137,7 @@ export default function RoadmapUploadModal({
           {error && (
             <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg flex items-center gap-2">
               <AlertCircle size={16} />
-              {error}
+              <span className="break-all">{error}</span>
             </div>
           )}
 

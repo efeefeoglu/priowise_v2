@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await currentUser();
     if (!user) {
-      return new Response('Unauthorized', { status: 401 });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
     const userEmail = user.emailAddresses[0]?.emailAddress;
 
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File | null;
 
     if (!file) {
-      return new Response('No file provided', { status: 400 });
+      return new Response(JSON.stringify({ error: 'No file provided' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
     // Convert file to Buffer
@@ -29,13 +29,13 @@ export async function POST(req: NextRequest) {
     let fileContent = "";
     try {
         fileContent = await parseFile(buffer, file.type);
-    } catch (e) {
+    } catch (e: any) {
         console.error("File parsing failed", e);
-        return new Response('Error parsing file content', { status: 500 });
+        return new Response(JSON.stringify({ error: 'Error parsing file content', details: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!fileContent || fileContent.trim().length === 0) {
-        return new Response('File is empty or could not be read.', { status: 400 });
+        return new Response(JSON.stringify({ error: 'File is empty or could not be read.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
     const llm = new ChatOpenAI({
@@ -121,13 +121,13 @@ IMPORTANT: Return ONLY the JSON array. Do not include markdown code blocks.
     try {
         let clean = (result.content as string).replace(/```json/g, '').replace(/```/g, '').trim();
         features = JSON.parse(clean);
-    } catch (e) {
+    } catch (e: any) {
         console.error("JSON parse error from LLM analysis", e);
-        return new Response('Failed to parse AI response', { status: 500 });
+        return new Response(JSON.stringify({ error: 'Failed to parse AI response', details: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
     if (!Array.isArray(features)) {
-         return new Response('AI response format invalid', { status: 500 });
+         return new Response(JSON.stringify({ error: 'AI response format invalid', details: 'Expected array' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
     // Chunk features into batches of 10 for Airtable API
@@ -156,7 +156,16 @@ IMPORTANT: Return ONLY the JSON array. Do not include markdown code blocks.
             return { fields };
         });
 
-        await table.create(records);
+        try {
+            await table.create(records);
+        } catch (airtableError: any) {
+            console.error('Airtable Error:', airtableError);
+            // Return detailed error if Airtable fails (e.g., column mismatch)
+            return new Response(JSON.stringify({
+                error: 'Airtable save failed',
+                details: airtableError.message || JSON.stringify(airtableError)
+            }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        }
     }
 
     return new Response(JSON.stringify({ success: true, count: features.length }), {
@@ -164,8 +173,12 @@ IMPORTANT: Return ONLY the JSON array. Do not include markdown code blocks.
         headers: { 'Content-Type': 'application/json' }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in roadmap upload route:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    // Return detailed error to client
+    return new Response(JSON.stringify({
+        error: 'Internal Server Error',
+        details: error.message || String(error)
+    }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
