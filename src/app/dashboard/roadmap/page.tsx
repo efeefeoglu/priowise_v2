@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import RoadmapFormModal from '@/components/roadmap/RoadmapFormModal';
 import RoadmapUploadModal from '@/components/roadmap/RoadmapUploadModal';
 
@@ -22,6 +23,7 @@ interface RoadmapRecord {
 }
 
 export default function RoadmapPage() {
+  const { user } = useUser();
   const [records, setRecords] = useState<RoadmapRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +72,30 @@ export default function RoadmapPage() {
       setRecords((prev) => prev.filter((r) => r.id !== id));
     } catch (err: any) {
       alert(`Error deleting record: ${err.message}`);
+    }
+  };
+
+  const handleRunScoring = async () => {
+    if (!user?.primaryEmailAddress?.emailAddress) {
+      alert('User email not found. Please try again later.');
+      return;
+    }
+
+    try {
+      await fetch('https://hook.eu2.make.com/t1t2m1gx1s4rj6bgvc3rhu7pzui54g9d', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clientID: user.primaryEmailAddress.emailAddress,
+          type: 'PM',
+        }),
+      });
+      alert('Scoring update started. Please check back in a few minutes.');
+    } catch (err) {
+      console.error('Failed to trigger scoring:', err);
+      alert('Failed to start scoring update. Please try again.');
     }
   };
 
@@ -128,6 +154,13 @@ export default function RoadmapPage() {
             >
             <Upload size={20} />
             Upload CSV
+            </button>
+            <button
+              onClick={handleRunScoring}
+              className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg hover:bg-yellow-400 transition-colors shadow-sm"
+            >
+              <Play size={20} />
+              Run/update scoring
             </button>
             <button
             onClick={handleCreate}
