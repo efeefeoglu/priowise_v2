@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play, CheckSquare } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import RoadmapFormModal from '@/components/roadmap/RoadmapFormModal';
 import RoadmapUploadModal from '@/components/roadmap/RoadmapUploadModal';
@@ -31,6 +31,7 @@ export default function RoadmapPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingRecord, setEditingRecord] = useState<RoadmapRecord | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const fetchRecords = async () => {
     try {
@@ -49,6 +50,9 @@ export default function RoadmapPage() {
   useEffect(() => {
     fetchRecords();
   }, []);
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [records]);
 
   const handleCreate = () => {
     setEditingRecord(null);
@@ -73,6 +77,67 @@ export default function RoadmapPage() {
     } catch (err: any) {
       alert(`Error deleting record: ${err.message}`);
     }
+  };
+
+  const deleteRecords = async (ids: string[], confirmationMessage: string) => {
+    if (ids.length === 0) return;
+    if (!window.confirm(confirmationMessage)) return;
+
+    try {
+      const responses = await Promise.all(
+        ids.map((id) =>
+          fetch(`/api/roadmap/${id}`, {
+            method: 'DELETE',
+          }),
+        ),
+      );
+      const failed = responses.find((res) => !res.ok);
+      if (failed) {
+        throw new Error('Failed to delete one or more records');
+      }
+      setRecords((prev) => prev.filter((record) => !ids.includes(record.id)));
+    } catch (err: any) {
+      alert(`Error deleting records: ${err.message}`);
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    deleteRecords(
+      Array.from(selectedIds),
+      `Are you sure you want to delete ${selectedIds.size} selected feature(s)?`,
+    );
+  };
+
+  const handleDeleteAll = () => {
+    deleteRecords(
+      records.map((record) => record.id),
+      'Are you sure you want to delete all features?',
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedIds(new Set(records.map((record) => record.id)));
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (prev.size === records.length) {
+        return new Set();
+      }
+      return new Set(records.map((record) => record.id));
+    });
+  };
+
+  const toggleSelectRecord = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
 
   const handleRunScoring = async () => {
@@ -156,6 +221,30 @@ export default function RoadmapPage() {
             Upload CSV
             </button>
             <button
+              onClick={handleSelectAll}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+              disabled={records.length === 0}
+            >
+              <CheckSquare size={20} />
+              Select all
+            </button>
+            <button
+              onClick={handleDeleteSelected}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={selectedIds.size === 0}
+            >
+              <Trash2 size={20} />
+              Delete selected
+            </button>
+            <button
+              onClick={handleDeleteAll}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={records.length === 0}
+            >
+              <Trash2 size={20} />
+              Delete all
+            </button>
+            <button
               onClick={handleRunScoring}
               className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg hover:bg-yellow-400 transition-colors shadow-sm"
             >
@@ -184,6 +273,15 @@ export default function RoadmapPage() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-700">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all features"
+                    className="h-4 w-4 rounded border-gray-300 text-brand-yellow focus:ring-brand-yellow"
+                    checked={records.length > 0 && selectedIds.size === records.length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 w-1/4">Name</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 w-1/3">Description</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Status</th>
@@ -196,13 +294,22 @@ export default function RoadmapPage() {
             <tbody className="divide-y divide-gray-100">
               {records.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                     No features found. Start by adding one!
                   </td>
                 </tr>
               ) : (
                 records.map((record) => (
                   <tr key={record.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 text-sm">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${record.fields.Name}`}
+                        className="h-4 w-4 rounded border-gray-300 text-brand-yellow focus:ring-brand-yellow"
+                        checked={selectedIds.has(record.id)}
+                        onChange={() => toggleSelectRecord(record.id)}
+                      />
+                    </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {record.fields.Name}
                     </td>
