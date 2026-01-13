@@ -30,6 +30,7 @@ export default function RoadmapPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [editingRecord, setEditingRecord] = useState<RoadmapRecord | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -80,10 +81,11 @@ export default function RoadmapPage() {
   };
 
   const deleteRecords = async (ids: string[], confirmationMessage: string) => {
-    if (ids.length === 0) return;
+    if (ids.length === 0 || isBulkDeleting) return;
     if (!window.confirm(confirmationMessage)) return;
 
     try {
+      setIsBulkDeleting(true);
       const responses = await Promise.all(
         ids.map((id) =>
           fetch(`/api/roadmap/${id}`, {
@@ -98,6 +100,8 @@ export default function RoadmapPage() {
       setRecords((prev) => prev.filter((record) => !ids.includes(record.id)));
     } catch (err: any) {
       alert(`Error deleting records: ${err.message}`);
+    } finally {
+      setIsBulkDeleting(false);
     }
   };
 
@@ -231,7 +235,7 @@ export default function RoadmapPage() {
             <button
               onClick={handleDeleteSelected}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={selectedIds.size === 0}
+              disabled={selectedIds.size === 0 || isBulkDeleting}
             >
               <Trash2 size={20} />
               Delete selected
@@ -239,7 +243,7 @@ export default function RoadmapPage() {
             <button
               onClick={handleDeleteAll}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={records.length === 0}
+              disabled={records.length === 0 || isBulkDeleting}
             >
               <Trash2 size={20} />
               Delete all
