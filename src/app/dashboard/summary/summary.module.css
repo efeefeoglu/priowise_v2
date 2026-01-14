@@ -1,0 +1,27 @@
+.summaryContent :global(section) {
+  line-height: 2;
+}
+
+.summaryContent :global(h2) {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 40px 0 20px 0;
+}
+
+.summaryContent :global(h3) {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 30px 0 10px 0;
+}
+
+.summaryContent :global(table) {
+  margin: 30px 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.summaryContent :global(table td),
+.summaryContent :global(table th) {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
