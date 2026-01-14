@@ -1,14 +1,6 @@
 import { UserButton } from "@clerk/nextjs";
-import Link from "next/link";
-import {
-  LayoutDashboard,
-  FileText,
-  HelpCircle,
-  LogOut,
-  Bell,
-  ClipboardList,
-  Map
-} from "lucide-react";
+import { Bell } from "lucide-react";
+import DashboardSidebar from "../../components/DashboardSidebar";
 
 export default function DashboardLayout({
   children,
@@ -17,46 +9,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full">
-        <div className="flex items-center h-16 px-6 border-b border-gray-100">
-           <Link href="/dashboard" className="font-rubik font-bold text-2xl tracking-tight text-black">
-              priowise
-           </Link>
-        </div>
-
-        <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-          <nav className="flex-1 px-4 space-y-1">
-            <Link href="/dashboard" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md bg-brand-yellow/10 text-yellow-800">
-               <LayoutDashboard className="mr-3 h-5 w-5 text-yellow-600" />
-               Dashboard
-            </Link>
-            <Link href="/dashboard/assessment" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
-               <ClipboardList className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-               First Assessment
-            </Link>
-            <Link href="/dashboard/roadmap" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
-               <Map className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-               Roadmap
-            </Link>
-            <Link href="/dashboard/summary" className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
-               <FileText className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-               Summary
-            </Link>
-          </nav>
-        </div>
-
-        <div className="flex-shrink-0 flex border-t border-gray-100 p-4">
-           <Link href="#" className="flex-shrink-0 w-full group block">
-              <div className="flex items-center">
-                 <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-2">
-                    <HelpCircle className="h-5 w-5 text-gray-400" />
-                    Help & Support
-                 </div>
-              </div>
-           </Link>
-        </div>
-      </aside>
+      <DashboardSidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
