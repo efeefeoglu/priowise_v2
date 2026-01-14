@@ -112,17 +112,6 @@ export default function RoadmapPage() {
     );
   };
 
-  const handleDeleteAll = () => {
-    deleteRecords(
-      records.map((record) => record.id),
-      'Are you sure you want to delete all features?',
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedIds(new Set(records.map((record) => record.id)));
-  };
-
   const toggleSelectAll = () => {
     setSelectedIds((prev) => {
       if (prev.size === records.length) {
@@ -225,28 +214,12 @@ export default function RoadmapPage() {
             Upload CSV
             </button>
             <button
-              onClick={handleSelectAll}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-              disabled={records.length === 0}
-            >
-              <CheckSquare size={20} />
-              Select all
-            </button>
-            <button
               onClick={handleDeleteSelected}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={selectedIds.size === 0 || isBulkDeleting}
             >
               <Trash2 size={20} />
               Delete selected
-            </button>
-            <button
-              onClick={handleDeleteAll}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={records.length === 0 || isBulkDeleting}
-            >
-              <Trash2 size={20} />
-              Delete all
             </button>
             <button
               onClick={handleRunScoring}
