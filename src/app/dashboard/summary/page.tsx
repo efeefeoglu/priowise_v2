@@ -1,6 +1,7 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { getSummaryForUser } from '@/lib/summary-service';
 import Link from 'next/link';
+import styles from './summary.module.css';
 
 export default async function SummaryPage() {
   const user = await currentUser();
@@ -17,7 +18,7 @@ export default async function SummaryPage() {
       <div className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm min-h-[200px]">
         {summary ? (
           <div
-            className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none text-gray-700"
+            className={`prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none text-gray-700 ${styles.summaryContent}`}
             dangerouslySetInnerHTML={{ __html: summary }}
           />
         ) : (
