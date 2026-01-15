@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export function Header() {
   return (
@@ -11,15 +12,29 @@ export function Header() {
             priowise
           </Link>
 
-          {/* Login Button */}
-          <Link href="/sign-in">
-            <Button
-              variant="outline"
-              className="border-[#f8b62d] text-[#2d2d2d] hover:bg-[#f8b62d]/10 rounded-xl px-6"
-            >
-              Login
-            </Button>
-          </Link>
+          {/* Auth Actions */}
+          <div className="flex items-center gap-4">
+            <SignedOut>
+              <Button
+                variant="outline"
+                className="border-[#f8b62d] text-[#2d2d2d] hover:bg-[#f8b62d]/10 rounded-xl px-6"
+                asChild
+              >
+                <Link href="/sign-in">Login</Link>
+              </Button>
+            </SignedOut>
+
+            <SignedIn>
+              <Button
+                variant="outline"
+                className="border-[#f8b62d] text-[#2d2d2d] hover:bg-[#f8b62d]/10 rounded-xl px-6"
+                asChild
+              >
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <UserButton />
+            </SignedIn>
+          </div>
         </div>
       </div>
     </header>
