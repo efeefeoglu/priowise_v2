@@ -55,6 +55,11 @@ export function Footer() {
                   Terms of Service
                 </Link>
               </li>
+              <li>
+                <Link href="/data-processing-addendum" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
+                  Data Processing Addendum (DPA)
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
