@@ -12,16 +12,16 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
- ✓ Ready in 1813ms
+ ✓ Ready in 2.1s
  ○ Compiling /dashboard ...
 
 [35m
 [Clerk]:[0m You are running in keyless mode.
-You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?token=nhdltbmfqfrprjsmbsgu7cp7nexovqarc2nnntru&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?token=rk92lr4hb9xq35w64bzl3rm2jqjfeswlxr1hzzhf&return_url=http%3A%2F%2Flocalhost%3A3000%2F
 
- GET /dashboard 200 in 8.7s (compile: 6.9s, proxy.ts: 402ms, render: 1367ms)
- POST /dashboard 200 in 37ms (compile: 7ms, proxy.ts: 11ms, render: 19ms)
- GET /dashboard 200 in 143ms (compile: 6ms, proxy.ts: 35ms, render: 102ms)
- POST /dashboard 303 in 213ms (compile: 6ms, proxy.ts: 11ms, render: 197ms)
- GET /dashboard 200 in 97ms (compile: 6ms, proxy.ts: 18ms, render: 73ms)
- GET /dashboard 200 in 82ms (compile: 6ms, proxy.ts: 34ms, render: 42ms)
+ GET /dashboard 200 in 15.6s (compile: 13.2s, proxy.ts: 386ms, render: 2.0s)
+ POST /dashboard 200 in 88ms (compile: 11ms, proxy.ts: 34ms, render: 43ms)
+ GET /dashboard 200 in 302ms (compile: 15ms, proxy.ts: 67ms, render: 220ms)
+ POST /dashboard 303 in 516ms (compile: 13ms, proxy.ts: 27ms, render: 476ms)
+ GET /dashboard 200 in 272ms (compile: 15ms, proxy.ts: 37ms, render: 220ms)
+ GET /dashboard 200 in 124ms (compile: 12ms, proxy.ts: 21ms, render: 91ms)
