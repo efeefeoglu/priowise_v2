@@ -113,7 +113,7 @@ Instructions:
 * Attachment Priority
 * Attachment Status
 	3.	Only include content that may influence future strategic prioritization.
-Ignore internal IDs, URLs, or system-generated values unless contextually important.
+Internal/system-like values may be omitted from the description, but they must never cause a row to be skipped. Every row still produces one feature object.
 	4.	Use full sentences or bullet points.
 Format each Description field like this:
 
