@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
 import { currentUser } from "@clerk/nextjs/server";
 
@@ -57,11 +56,6 @@ export default async function Dashboard() {
 
           {/* Divider */}
           <div className="my-16 border-t border-gray-200"></div>
-
-          {/* FAQ Section Reuse */}
-           <div className="py-8">
-             <FAQ />
-           </div>
 
         </div>
       </div>
