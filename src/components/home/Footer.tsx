@@ -51,9 +51,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
+                <Link href="/terms-of-service" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
