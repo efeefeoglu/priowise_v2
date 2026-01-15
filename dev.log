@@ -12,14 +12,4 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
- ✓ Ready in 1896ms
- ⨯ Error: @clerk/nextjs: Missing secretKey. You can get your key at https://dashboard.clerk.com/last-active?path=api-keys.
-    at ignore-listed frames
- GET / 404 in 3.2s (compile: -272594µs, proxy.ts: 3.1s, render: 283ms)
- ○ Compiling /_not-found/page ...
- ⨯ Error: @clerk/clerk-react: The publishableKey passed to Clerk is invalid. You can get your Publishable key at https://dashboard.clerk.com/last-active?path=api-keys. (key=pk_test_dGhpcyBpcyBhIGR1bW15IGtleSBmb3IgdGVzdGluZyBwdXJwb3Nlcw==)
-    at ignore-listed frames {
-  digest: '4253999355'
-}
- ✓ Compiled in 239ms
-[?25h
+ ✓ Ready in 2.2s

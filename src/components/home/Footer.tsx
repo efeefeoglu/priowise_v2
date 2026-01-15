@@ -34,9 +34,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
+                <Link href="/blog" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
                   Insights Blog
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
