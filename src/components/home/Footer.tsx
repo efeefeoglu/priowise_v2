@@ -72,19 +72,19 @@ export function Footer() {
 
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://www.linkedin.com/company/priowise/"
               className="w-10 h-10 rounded-full bg-white/60 border border-white/40 flex items-center justify-center hover:bg-[#f8b62d]/20 transition-colors"
             >
               <Linkedin className="w-5 h-5 text-[#2d2d2d]" />
             </a>
             <a
-              href="#"
+              href="https://twitter.com/priowise"
               className="w-10 h-10 rounded-full bg-white/60 border border-white/40 flex items-center justify-center hover:bg-[#f8b62d]/20 transition-colors"
             >
               <Twitter className="w-5 h-5 text-[#2d2d2d]" />
             </a>
             <a
-              href="#"
+              href="https://instagram.com/priowisecom"
               className="w-10 h-10 rounded-full bg-white/60 border border-white/40 flex items-center justify-center hover:bg-[#f8b62d]/20 transition-colors"
             >
               <Instagram className="w-5 h-5 text-[#2d2d2d]" />
