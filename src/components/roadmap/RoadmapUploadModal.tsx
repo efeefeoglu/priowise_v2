@@ -161,10 +161,10 @@ export default function RoadmapUploadModal({
               {isUploading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Processing...
+                  Extracting...
                 </>
               ) : (
-                'Upload & Process'
+                'Extract'
               )}
             </button>
           </div>

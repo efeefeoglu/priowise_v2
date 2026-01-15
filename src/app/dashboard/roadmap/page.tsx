@@ -263,7 +263,7 @@ export default function RoadmapPage() {
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 w-1/3">Description</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Status</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Priority</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-700">Score</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-700">Weighted Score</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Tags</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 text-right">Actions</th>
               </tr>
