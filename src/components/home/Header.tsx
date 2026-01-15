@@ -14,6 +14,12 @@ export function Header() {
 
           {/* Login / Dashboard */}
           <div className="flex items-center gap-4">
+            <Link
+              href="/blog"
+              className="text-sm font-medium text-[#2d2d2d] hover:text-[#f8b62d] transition-colors mr-2 hidden sm:block"
+            >
+              Insights Blog
+            </Link>
             <SignedOut>
               <Link href="/sign-in">
                 <Button
