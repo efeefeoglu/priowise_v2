@@ -53,6 +53,10 @@ export default function PostForm({ initialData }: PostFormProps) {
 
         await upsertPost(postData, initialData?.id);
       } catch (error) {
+        if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+            // Ignore redirect error
+            return;
+        }
         alert('Error saving post: ' + error);
       }
     });
