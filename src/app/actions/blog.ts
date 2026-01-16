@@ -58,7 +58,6 @@ export async function upsertPost(postData: BlogPostInput, id?: string) {
 
   const payload = {
     ...postData,
-    updated_at: new Date().toISOString(),
   };
 
   let error;
