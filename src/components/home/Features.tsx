@@ -45,7 +45,7 @@ export function Features() {
             Strategic Alignment Made Easy
           </h2>
           <p className="text-xl text-[#6a6a6a] max-w-3xl mx-auto">
-            Discover how Priowise makes aligning your company & product strategies
+            Discover how Priowise aligns your business & product strategies
             easier than ever. Built for success, made for clarity.
           </p>
         </motion.div>
