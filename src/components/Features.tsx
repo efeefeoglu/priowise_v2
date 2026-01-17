@@ -1,20 +1,25 @@
-import { Target, Zap, Layout, Users, BarChart3, Shield } from "lucide-react";
+import { Target, Users, BarChart3, Shield, BrainCircuit, RefreshCw } from "lucide-react";
 
 const features = [
   {
-    name: "Strategic Alignment",
-    description: "Connect daily tasks to high-level goals. Ensure every feature ships with purpose.",
+    name: "Align Founder Vision & Team Execution",
+    description: "Keep strategic intent connected to daily execution — without misalignment.",
+    icon: Users,
+  },
+  {
+    name: "Prioritize What Matters Most",
+    description: "Cut through noise and focus on initiatives with real business impact.",
     icon: Target,
   },
   {
-    name: "Faster Decisions",
-    description: "Stop debating endless backlogs. Use data-driven scoring to prioritize confidently.",
-    icon: Zap,
+    name: "Insight-Backed Decisions, Not Gut Calls",
+    description: "Make every decision data-informed and tied to your strategic goals.",
+    icon: BrainCircuit,
   },
   {
-    name: "Visual Roadmaps",
-    description: "Create beautiful, shareable roadmaps that keep everyone on the same page.",
-    icon: Layout,
+    name: "Always-Adaptive Prioritization",
+    description: "Refresh priorities as strategy shifts — no need to start over.",
+    icon: RefreshCw,
   },
 ];
 
@@ -48,12 +53,12 @@ export function Features() {
             Strategic Alignment Made Easy
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Everything you need to transform your product management process from chaotic to streamlined.
+            Discover how Priowise aligns your business & product strategies easier than ever. Built for success, made for clarity.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
             {features.map((feature) => (
               <div key={feature.name} className="flex flex-col items-start bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="rounded-lg bg-brand-yellow/20 p-3 ring-1 ring-brand-yellow/50 mb-6">
