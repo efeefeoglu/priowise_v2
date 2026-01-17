@@ -6,26 +6,26 @@ import { Target, Users, TrendingUp, LayoutGrid } from 'lucide-react';
 const features = [
   {
     icon: Target,
-    title: 'Fast Prioritization',
-    description: 'Easily find the next prioritization context (project specifically) for your company\'s vision and objectives. No more endless meetings.',
+    title: 'Align Founder Vision & Team Execution',
+    description: 'Keep strategic intent connected to daily execution — without misalignment.',
     color: '#f8b62d',
   },
   {
     icon: Users,
-    title: 'Product Team Collaboration',
-    description: 'Bring together product managers, designers, and engineers to collaboratively set business and product strategies perfectly synchronized.',
+    title: 'Prioritize What Matters Most',
+    description: 'Cut through noise and focus on initiatives with real business impact.',
     color: '#d4a5a5',
   },
   {
     icon: TrendingUp,
-    title: 'Review Objectives & Key Results',
-    description: 'Align OKRs and initiatives with your company\'s strategic priorities, deliverable objectives and actionable key results. See realtime business impact.',
+    title: 'Insight-Backed Decisions, Not Gut Calls',
+    description: 'Make every decision data-informed and tied to your strategic goals.',
     color: '#a7c7e7',
   },
   {
     icon: LayoutGrid,
-    title: 'Data-Driven Roadmap',
-    description: 'Create a clear strategic roadmap from scratch, in real-time, to quickly score your existing road-map items effortlessly to maximize team efficiency.',
+    title: 'Always-Adaptive Prioritization',
+    description: 'Refresh priorities as strategy shifts — no need to start over.',
     color: '#e8d5b5',
   },
 ];
@@ -62,7 +62,7 @@ export function Features() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
                   {/* Accent blob */}
                   <div
                     className="absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20 blur-2xl"
