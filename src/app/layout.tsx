@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Priowise",
+  title: "Priowise - Strategic Alignment & Prioritization Made Easy",
   description: "Strategic Alignment Made Easy",
 };
 
