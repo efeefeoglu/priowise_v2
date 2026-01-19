@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'motion/react';
-import { Target, Users, TrendingUp, LayoutGrid } from 'lucide-react';
+import { Target, Users, TrendingUp, LayoutGrid, Lightbulb, Shuffle } from 'lucide-react';
 
 const features = [
   {
@@ -17,13 +17,13 @@ const features = [
     color: '#d4a5a5',
   },
   {
-    icon: TrendingUp,
+    icon: Lightbulb,
     title: 'Insight-Backed Decisions, Not Gut Calls',
     description: 'Make every decision data-informed and tied to your strategic goals.',
     color: '#a7c7e7',
   },
   {
-    icon: LayoutGrid,
+    icon: Shuffle,
     title: 'Always-Adaptive Prioritization',
     description: 'Refresh priorities as strategy shifts — no need to start over.',
     color: '#e8d5b5',

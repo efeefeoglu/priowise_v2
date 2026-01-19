@@ -12,4 +12,28 @@ This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
- ✓ Ready in 2.2s
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+ ✓ Ready in 1947ms
+ ○ Compiling / ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?token=8sfxm2kgltz7c8aao15j9xpgytvkwb50a4tafhto&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+ GET / 200 in 15.6s (compile: 13.7s, proxy.ts: 146ms, render: 1731ms)
+ POST / 200 in 46ms (compile: 9ms, proxy.ts: 15ms, render: 23ms)
+ GET / 200 in 202ms (compile: 9ms, proxy.ts: 40ms, render: 153ms)
+ POST / 303 in 285ms (compile: 10ms, proxy.ts: 14ms, render: 261ms)
+ GET / 200 in 124ms (compile: 20ms, proxy.ts: 25ms, render: 79ms)
+ GET / 200 in 203ms (compile: 8ms, proxy.ts: 7ms, render: 187ms)
+ POST / 200 in 28ms (compile: 5ms, proxy.ts: 6ms, render: 17ms)
+ GET / 200 in 191ms (compile: 7ms, proxy.ts: 16ms, render: 169ms)
+ POST / 303 in 249ms (compile: 10ms, proxy.ts: 10ms, render: 229ms)
+ GET / 200 in 84ms (compile: 9ms, proxy.ts: 12ms, render: 64ms)
+ GET / 200 in 93ms (compile: 6ms, proxy.ts: 19ms, render: 68ms)
+ GET / 200 in 422ms (compile: 129ms, proxy.ts: 6ms, render: 287ms)
+ POST / 200 in 24ms (compile: 7ms, proxy.ts: 6ms, render: 11ms)
+ GET / 200 in 93ms (compile: 13ms, proxy.ts: 10ms, render: 71ms)
+ POST / 303 in 155ms (compile: 5ms, proxy.ts: 10ms, render: 139ms)
+ GET / 200 in 75ms (compile: 5ms, proxy.ts: 11ms, render: 59ms)
+ GET / 200 in 69ms (compile: 7ms, proxy.ts: 22ms, render: 41ms)
