@@ -1,26 +1,26 @@
 "use client";
 
 import { motion } from 'motion/react';
-import { Clock, Puzzle, Zap, Brain, Rocket, Target } from 'lucide-react';
+import { Target, Rotate3d, Brain, FastForward, Rocket, TrendingUpDown } from 'lucide-react';
 
 const benefits = [
   {
-    icon: Clock,
+    icon: Target,
     title: 'Align Strategy & Product',
     description: 'Turn leadership goals into product priorities transparently, and at scale.',
   },
   {
-    icon: Puzzle,
+    icon: Rotate3d,
     title: 'Impact Oriented Prioritization',
     description: "Score what matters, skip what doesn't.",
   },
   {
-    icon: Zap,
+    icon: Brain,
     title: 'AI-Powered, Not AI-Led',
     description: 'We use AI to support smart decisions, not replace them. Insights where it counts.',
   },
   {
-    icon: Brain,
+    icon: FastForward,
     title: 'Start Fast, Add Value Instantly',
     description: 'Get up and running in minutes. Designed for clarity from Day 1.',
   },
@@ -30,7 +30,7 @@ const benefits = [
     description: 'Score existing roadmaps and build new ones, see what moves the needle.',
   },
   {
-    icon: Target,
+    icon: TrendingUpDown,
     title: 'Dynamic Strategy Re-Assessment',
     description: 'Markets and priorities change, and so should product roadmaps. Regular re-assessments help teams adapt, not drift.',
   },
