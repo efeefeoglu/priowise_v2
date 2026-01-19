@@ -6,33 +6,33 @@ import { Clock, Puzzle, Zap, Brain, Rocket, Target } from 'lucide-react';
 const benefits = [
   {
     icon: Clock,
-    title: 'Fast Prioritization',
-    description: 'Turn complex trade-offs into clear decisions—always, instantly, without the guesswork.',
+    title: 'Align Strategy & Product',
+    description: 'Turn leadership goals into product priorities transparently, and at scale.',
   },
   {
     icon: Puzzle,
-    title: 'Leadership-Product Alignment',
-    description: 'Bridge leadership vision, product strategy and execution. Ensure transparency and product teams are always aligned.',
+    title: 'Impact Oriented Prioritization',
+    description: "Score what matters, skip what doesn't.",
   },
   {
     icon: Zap,
-    title: 'Strategy Clarity',
-    description: 'Turn complex objectives into clear, prioritized plans—effortlessly prioritize what matters.',
+    title: 'AI-Powered, Not AI-Led',
+    description: 'We use AI to support smart decisions, not replace them. Insights where it counts.',
   },
   {
     icon: Brain,
-    title: 'AI-Driven Accuracy',
-    description: 'Leverage AI to objectively assess, compare and score across impactful variables and factors.',
+    title: 'Start Fast, Add Value Instantly',
+    description: 'Get up and running in minutes. Designed for clarity from Day 1.',
   },
   {
     icon: Rocket,
-    title: 'Easy to Start',
-    description: 'Priowise seamlessly occurs into your existing workflow—quick to adopt, built to add value from Day 1.',
+    title: 'Built for Real Impact',
+    description: 'Score existing roadmaps and build new ones, see what moves the needle.',
   },
   {
     icon: Target,
-    title: 'Real Impact → Strategic Decisions',
-    description: 'Start from scratch for exclusive real-time insights and existing roadmaps strategize and team allocation transparency at its core.',
+    title: 'Dynamic Strategy Re-Assessment',
+    description: 'Markets and priorities change, and so should product roadmaps. Regular re-assessments help teams adapt, not drift.',
   },
 ];
 
