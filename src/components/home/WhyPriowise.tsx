@@ -32,7 +32,7 @@ const benefits = [
   {
     icon: Target,
     title: 'Dynamic Strategy Re-Assessment',
-    description: 'Markets and priorities change, and so should product roadmaps. Regular re-assessments help teams adapt, not drift.',
+    description: 'Markets and priorities change, and so should product roadmaps.',
   },
 ];
 
