@@ -1,19 +1,30 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
-  HelpCircle,
   ClipboardList,
   Map,
   Goal,
   Medal,
   Focus,
+  PanelLeft,
+  PanelRight,
+  FileQuestion,
+  BookA,
+  LifeBuoy,
 } from "lucide-react";
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({
+  isCollapsed,
+  toggleSidebar,
+}: {
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
+}) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -63,14 +74,32 @@ export default function DashboardSidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full">
-      <div className="flex items-center h-16 px-6 border-b border-gray-100">
-        <Link
-          href="/dashboard"
-          className="font-rubik font-bold text-2xl tracking-tight text-black"
-        >
-          priowise
-        </Link>
+    <aside
+      className={`hidden md:flex flex-col bg-white border-r border-gray-100 h-full transition-all duration-300 ${
+        isCollapsed ? "w-20" : "w-64"
+      }`}
+    >
+      <div className="flex items-center h-16 px-4 border-b border-gray-100">
+        <button onClick={toggleSidebar} className="p-2 rounded-md hover:bg-gray-100">
+          {isCollapsed ? (
+            <PanelRight className="h-6 w-6 text-gray-500" />
+          ) : (
+            <PanelLeft className="h-6 w-6 text-gray-500" />
+          )}
+        </button>
+        <div className={`flex items-center ${isCollapsed ? 'hidden' : 'flex'}`}>
+          <Link href="/dashboard" className="flex items-center ml-2">
+            <Image
+              src="/Logo-single.png"
+              alt="Priowise Logo"
+              width={32}
+              height={32}
+            />
+            <span className="ml-2 font-rubik font-bold text-2xl tracking-tight text-black">
+              priowise
+            </span>
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -85,31 +114,47 @@ export default function DashboardSidebar() {
                   active
                     ? "bg-brand-yellow/10 text-yellow-800"
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                }`}
+                } ${isCollapsed ? "justify-center" : ""}`}
               >
                 <item.icon
-                  className={`mr-3 h-5 w-5 ${
+                  className={`h-5 w-5 ${
                     active
                       ? "text-yellow-600"
                       : "text-gray-400 group-hover:text-gray-500"
-                  }`}
+                  } ${isCollapsed ? "" : "mr-3"}`}
                 />
-                {item.name}
+                <span className={isCollapsed ? "hidden" : "block"}>{item.name}</span>
               </Link>
             );
           })}
         </nav>
       </div>
 
-      <div className="flex-shrink-0 flex border-t border-gray-100 p-4">
-        <Link href="#" className="flex-shrink-0 w-full group block">
-          <div className="flex items-center">
-            <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-2">
-              <HelpCircle className="h-5 w-5 text-gray-400" />
-              Help & Support
-            </div>
-          </div>
-        </Link>
+      <div className="flex-shrink-0 flex flex-col border-t border-gray-100 p-4 space-y-1">
+        {[
+          {
+            name: "How to use Priowise",
+            href: "/dashboard/how-to-use-priowise",
+            icon: FileQuestion,
+          },
+          { name: "Dictionary", href: "/dashboard/dictionary", icon: BookA },
+          { name: "Help & Support", href: "#", icon: LifeBuoy },
+        ].map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900 ${
+              isCollapsed ? "justify-center" : ""
+            }`}
+          >
+            <item.icon
+              className={`h-5 w-5 text-gray-400 group-hover:text-gray-500 ${
+                isCollapsed ? "" : "mr-3"
+              }`}
+            />
+            <span className={isCollapsed ? "hidden" : "block"}>{item.name}</span>
+          </Link>
+        ))}
       </div>
     </aside>
   );
