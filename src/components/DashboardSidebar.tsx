@@ -87,15 +87,22 @@ export default function DashboardSidebar({
             <PanelLeft className="h-6 w-6 text-gray-500" />
           )}
         </button>
-        <div className={`flex items-center ${isCollapsed ? 'hidden' : 'flex'}`}>
-          <Link href="/dashboard" className="flex items-center ml-2">
+        <div className={`flex flex-1 items-center ${isCollapsed ? "justify-center" : ""}`}>
+          <Link
+            href="/dashboard"
+            className={`flex items-center ${isCollapsed ? "" : "ml-2"}`}
+          >
             <Image
               src="/Logo-single.png"
               alt="Priowise Logo"
               width={32}
               height={32}
             />
-            <span className="ml-2 font-rubik font-bold text-2xl tracking-tight text-black">
+            <span
+              className={`font-rubik text-2xl font-bold tracking-tight text-black ${
+                isCollapsed ? "hidden" : "ml-2 block"
+              }`}
+            >
               priowise
             </span>
           </Link>

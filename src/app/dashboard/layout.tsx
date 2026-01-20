@@ -31,11 +31,7 @@ export default function DashboardLayout({
       <DashboardSidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
-      <div
-        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-          isCollapsed ? "ml-20" : "ml-64"
-        }`}
-      >
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
         <header className="flex justify-between items-center h-16 bg-white border-b border-gray-100 px-6 sm:px-8">
            <div className="flex-1 flex">
