@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Rubik, Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { CanonicalLink } from "@/components/CanonicalLink";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -31,6 +32,7 @@ export default function RootLayout({
         >
           {children}
         </body>
+        <CanonicalLink />
       </html>
     </ClerkProvider>
   );
