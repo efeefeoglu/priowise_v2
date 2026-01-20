@@ -8,6 +8,9 @@ import {
   HelpCircle,
   ClipboardList,
   Map,
+  Goal,
+  Medal,
+  Focus,
 } from "lucide-react";
 
 export default function DashboardSidebar() {
@@ -28,9 +31,19 @@ export default function DashboardSidebar() {
       icon: LayoutDashboard,
     },
     {
-      name: "First Assessment",
+      name: "Assessments",
       href: "/dashboard/assessment",
       icon: ClipboardList,
+    },
+    {
+      name: "Objectives",
+      href: "/dashboard/objectives",
+      icon: Goal,
+    },
+    {
+      name: "Initiatives",
+      href: "/dashboard/initiatives",
+      icon: Focus,
     },
     {
       name: "Roadmap",
@@ -38,7 +51,12 @@ export default function DashboardSidebar() {
       icon: Map,
     },
     {
-      name: "Summary",
+      name: "Competition",
+      href: "/dashboard/competition",
+      icon: Medal,
+    },
+    {
+      name: "Summary Report",
       href: "/dashboard/summary",
       icon: FileText,
     },
