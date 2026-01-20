@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
-  HelpCircle,
   ClipboardList,
   Map,
   Goal,
   Medal,
   Focus,
+  FileQuestion,
+  BookA,
+  LifeBuoy,
 } from "lucide-react";
 
 export default function DashboardSidebar() {
@@ -62,6 +64,24 @@ export default function DashboardSidebar() {
     },
   ];
 
+  const supportLinks = [
+    {
+      name: "How to use Priowise",
+      href: "/dashboard/how-to-use",
+      icon: FileQuestion,
+    },
+    {
+      name: "Dictionary",
+      href: "/dashboard/dictionary",
+      icon: BookA,
+    },
+    {
+      name: "Help & Support",
+      href: "#",
+      icon: LifeBuoy,
+    },
+  ];
+
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full">
       <div className="flex items-center h-16 px-6 border-b border-gray-100">
@@ -101,15 +121,21 @@ export default function DashboardSidebar() {
         </nav>
       </div>
 
-      <div className="flex-shrink-0 flex border-t border-gray-100 p-4">
-        <Link href="#" className="flex-shrink-0 w-full group block">
-          <div className="flex items-center">
-            <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-2">
-              <HelpCircle className="h-5 w-5 text-gray-400" />
-              Help & Support
+      <div className="flex-shrink-0 flex flex-col border-t border-gray-100 p-4 space-y-2">
+        {supportLinks.map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className="flex-shrink-0 w-full group block"
+          >
+            <div className="flex items-center">
+              <div className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex items-center gap-2">
+                <item.icon className="h-5 w-5 text-gray-400" />
+                {item.name}
+              </div>
             </div>
-          </div>
-        </Link>
+          </Link>
+        ))}
       </div>
     </aside>
   );
