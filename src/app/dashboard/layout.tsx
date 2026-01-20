@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { Bell } from "lucide-react";
 import DashboardSidebar from "../../components/DashboardSidebar";
@@ -7,12 +10,32 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      const storedIsCollapsed = localStorage.getItem("sidebar-collapsed");
+      return storedIsCollapsed ? JSON.parse(storedIsCollapsed) : false;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
+
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <DashboardSidebar />
+      <DashboardSidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          isCollapsed ? "ml-20" : "ml-64"
+        }`}
+      >
         {/* Top Header */}
         <header className="flex justify-between items-center h-16 bg-white border-b border-gray-100 px-6 sm:px-8">
            <div className="flex-1 flex">
@@ -24,7 +47,12 @@ export default function DashboardLayout({
                  <span className="sr-only">View notifications</span>
               </button>
               <div className="h-8 w-px bg-gray-200 mx-2" />
-              <UserButton afterSignOutUrl="/" />
+              <UserButton afterSignOutUrl="/">
+                <UserButton.MenuItems>
+                  <UserButton.Action label="manageAccount" />
+                  <UserButton.Action label="signOut" />
+                </UserButton.MenuItems>
+              </UserButton>
            </div>
         </header>
 
