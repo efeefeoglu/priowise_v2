@@ -47,6 +47,11 @@ export default function DashboardSidebar({
       icon: ClipboardList,
     },
     {
+      name: "Roadmap",
+      href: "/dashboard/roadmap",
+      icon: Map,
+    },
+    {
       name: "Objectives",
       href: "/dashboard/objectives",
       icon: Goal,
@@ -55,11 +60,6 @@ export default function DashboardSidebar({
       name: "Initiatives",
       href: "/dashboard/initiatives",
       icon: Focus,
-    },
-    {
-      name: "Roadmap",
-      href: "/dashboard/roadmap",
-      icon: Map,
     },
     {
       name: "Competition",
