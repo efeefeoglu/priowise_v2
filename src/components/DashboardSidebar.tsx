@@ -140,8 +140,8 @@ export default function DashboardSidebar({
       <div className="flex-shrink-0 flex flex-col border-t border-gray-100 p-4 space-y-1">
         {[
           {
-            name: "How to use Priowise",
-            href: "/dashboard/how-to-use-priowise",
+            name: "User Guideline",
+            href: "/dashboard/user-guideline",
             icon: FileQuestion,
           },
           { name: "Dictionary", href: "/dashboard/dictionary", icon: BookA },
