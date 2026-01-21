@@ -53,6 +53,41 @@ export async function uploadImage(formData: FormData) {
   return publicUrl;
 }
 
+export async function uploadPostImages(formData: FormData) {
+  await checkAdminAccess();
+
+  const files = formData.getAll('files') as File[];
+  if (!files || files.length === 0) {
+    throw new Error('No files uploaded');
+  }
+
+  const uploadedImages = [];
+
+  for (const file of files) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+
+      const { error } = await supabase
+        .storage
+        .from('blog-images')
+        .upload(fileName, file);
+
+      if (error) {
+        console.error('Upload error for file ' + file.name, error);
+        throw new Error('Failed to upload image ' + file.name);
+      }
+
+      const { data: { publicUrl } } = supabase
+        .storage
+        .from('blog-images')
+        .getPublicUrl(fileName);
+
+      uploadedImages.push({ url: publicUrl, name: file.name });
+  }
+
+  return uploadedImages;
+}
+
 export async function upsertPost(postData: BlogPostInput, id?: string) {
   await checkAdminAccess();
 

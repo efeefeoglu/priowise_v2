@@ -2,11 +2,12 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { BlogPost } from '@/lib/blog';
-import { uploadImage, upsertPost, BlogPostInput } from '@/app/actions/blog';
+import { uploadImage, upsertPost, uploadPostImages, BlogPostInput } from '@/app/actions/blog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Paperclip, X } from 'lucide-react';
 
 interface PostFormProps {
   initialData?: BlogPost;
@@ -30,7 +31,9 @@ export default function PostForm({ initialData }: PostFormProps) {
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [chatFiles, setChatFiles] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,20 +50,36 @@ export default function PostForm({ initialData }: PostFormProps) {
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!chatInput.trim() || isAiLoading) return;
+    if ((!chatInput.trim() && chatFiles.length === 0) || isAiLoading) return;
 
     const userMsg = chatInput;
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    const currentFiles = [...chatFiles];
+
+    // Display message with attachment info
+    const fileNames = currentFiles.map(f => f.name).join(', ');
+    const displayMsg = userMsg + (currentFiles.length > 0 ? ` [Uploading: ${fileNames}]` : '');
+
+    setMessages(prev => [...prev, { role: 'user', content: displayMsg }]);
     setChatInput('');
+    setChatFiles([]);
     setIsAiLoading(true);
 
     try {
+      let imageUrls: { url: string; name: string }[] = [];
+
+      if (currentFiles.length > 0) {
+        const formData = new FormData();
+        currentFiles.forEach(file => formData.append('files', file));
+        imageUrls = await uploadPostImages(formData);
+      }
+
       const res = await fetch('/api/blog/ai-assist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: userMsg,
-          currentHtml: content
+          currentHtml: content,
+          images: imageUrls
         })
       });
 
@@ -206,12 +225,51 @@ export default function PostForm({ initialData }: PostFormProps) {
                             }}
                             placeholder="Paste content to convert, or ask for adjustments..."
                         />
+                        {/* Selected Files Preview */}
+                        {chatFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {chatFiles.map((f, i) => (
+                                    <div key={i} className="flex items-center gap-1 bg-gray-100 text-xs px-2 py-1 rounded">
+                                        <span className="truncate max-w-[100px]">{f.name}</span>
+                                        <button type="button" onClick={() => setChatFiles(prev => prev.filter((_, idx) => idx !== i))}>
+                                            <X className="w-3 h-3 text-gray-500 hover:text-red-500" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <div className="flex justify-between items-center">
-                            <span className="text-xs text-gray-400">Shift+Enter for new line</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400">Shift+Enter for new line</span>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    onChange={(e) => {
+                                        if (e.target.files) {
+                                            setChatFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
+                                        }
+                                        // Reset input so same file can be selected again if needed
+                                        e.target.value = '';
+                                    }}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    title="Attach images"
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <Paperclip className="w-4 h-4" />
+                                </Button>
+                            </div>
                             <Button
                                 type="button"
                                 onClick={() => handleSendMessage()}
-                                disabled={isAiLoading || !chatInput.trim()}
+                                disabled={isAiLoading || (!chatInput.trim() && chatFiles.length === 0)}
                                 size="sm"
                             >
                                 {isAiLoading ? 'Processing...' : 'Send'}
