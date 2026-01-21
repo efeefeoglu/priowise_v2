@@ -145,7 +145,7 @@ export default function DashboardSidebar({
             icon: FileQuestion,
           },
           { name: "Dictionary", href: "/dashboard/dictionary", icon: BookA },
-          { name: "Help & Support", href: "#", icon: LifeBuoy },
+          { name: "Help & Support", href: "mailto:support@priowise.com", icon: LifeBuoy },
         ].map((item) => (
           <Link
             key={item.name}

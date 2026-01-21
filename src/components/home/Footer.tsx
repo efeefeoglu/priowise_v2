@@ -29,7 +29,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
+                <a href="mailto:support@priowise.com" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
                   Contact us
                 </a>
               </li>
