@@ -14,6 +14,8 @@ export async function POST(req: NextRequest) {
 
     let { prompt, currentHtml, images } = await req.json();
 
+    console.log('AI Assist Request:', { prompt, imageCount: images?.length });
+
     if (!prompt) {
       if (images && images.length > 0) {
         prompt = "Please insert the provided images into the content in a logical order.";
@@ -38,12 +40,13 @@ RULES:
 4. DO NOT include <html>, <head>, or <body> tags. Return the content body only.
 5. If the User Input is a request to modify the existing content (e.g., "make the second paragraph bold", "change bullets to numbers"), apply that change to the "Current Context HTML".
 6. If the User Input is raw text (e.g., a pasted article), convert it into the structured HTML format described above.
-7. If images are provided in the context, insert them into the content using <img> tags.
+7. If images are provided in the context, YOU MUST insert them into the content using <img> tags. Do NOT ignore them.
    - Use the provided URL in the 'src' attribute.
    - Use the file name (without extension) as the 'alt' text if no better description can be inferred.
    - If the user specifies placement (e.g., "put image A after the intro"), follow it.
    - If no placement is specified, distribute them logically throughout the content or append them at the end.
    - Ensure the images are wrapped in <p> tags or their own block elements if appropriate.
+   - Example insertion: <p><img src="URL" alt="Description"></p>
 8. Return the response in strict JSON format:
 {
   "html": "The full updated HTML content",
