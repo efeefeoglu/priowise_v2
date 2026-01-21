@@ -12,10 +12,14 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const { prompt, currentHtml, images } = await req.json();
+    let { prompt, currentHtml, images } = await req.json();
 
     if (!prompt) {
-      return new Response(JSON.stringify({ error: 'Prompt is required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      if (images && images.length > 0) {
+        prompt = "Please insert the provided images into the content in a logical order.";
+      } else {
+        return new Response(JSON.stringify({ error: 'Prompt is required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
     }
 
     const llm = new ChatOpenAI({
