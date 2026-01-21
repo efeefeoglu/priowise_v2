@@ -61,6 +61,7 @@ export default function PostForm({ initialData }: PostFormProps) {
 
     setMessages(prev => [...prev, { role: 'user', content: displayMsg }]);
     setChatInput('');
+    setChatFiles([]);
     setIsAiLoading(true);
 
     try {
@@ -93,7 +94,6 @@ export default function PostForm({ initialData }: PostFormProps) {
       }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.message || 'Content updated successfully.' }]);
-      setChatFiles([]); // Clear files only after success
 
     } catch (err: any) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
