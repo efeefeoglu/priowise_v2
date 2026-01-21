@@ -54,7 +54,7 @@ export default async function BlogPostPage({
       )}
 
       <div
-        className="prose prose-lg max-w-none prose-headings:font-rubik prose-headings:font-bold prose-headings:text-[#2d2d2d] prose-a:text-[#f8b62d] prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl"
+        className="prose prose-lg max-w-none prose-headings:font-rubik prose-headings:font-bold prose-headings:text-[#2d2d2d] prose-h3:text-[1.5rem] prose-a:text-[#f8b62d] prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
     </article>
