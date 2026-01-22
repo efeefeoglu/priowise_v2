@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -8,7 +9,13 @@ export function Header() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="font-rubik font-bold text-2xl tracking-tight text-[#2d2d2d]">
+          <Link href="/" className="flex items-center gap-2 font-rubik font-bold text-2xl tracking-tight text-[#2d2d2d]">
+            <Image
+              src="/Logo-single.png"
+              alt="Priowise Logo"
+              width={32}
+              height={32}
+            />
             priowise
           </Link>
 

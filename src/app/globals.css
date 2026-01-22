@@ -105,4 +105,7 @@ body {
   * {
     border-color: var(--border);
   }
+  button {
+    cursor: pointer;
+  }
 }
