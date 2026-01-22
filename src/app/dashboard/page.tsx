@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Footer } from "@/components/Footer";
 import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Dashboard() {
@@ -7,7 +6,7 @@ export default async function Dashboard() {
   const firstName = user?.firstName || "there";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       {/* Dashboard Content */}
       <div className="pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,8 +58,6 @@ export default async function Dashboard() {
 
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

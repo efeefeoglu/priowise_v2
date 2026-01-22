@@ -3,7 +3,7 @@ import { Features } from '@/components/home/Features';
 import { WhyPriowise } from '@/components/home/WhyPriowise';
 import { FAQ } from '@/components/home/FAQ';
 import { CTASection } from '@/components/home/CTASection';
-import { Footer } from '@/components/home/Footer';
+import { Footer } from '@/components/Footer';
 import { OrganicShapes } from '@/components/home/OrganicShapes';
 import { Header } from '@/components/home/Header';
 

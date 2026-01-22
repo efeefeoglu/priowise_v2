@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { Bell } from "lucide-react";
 import DashboardSidebar from "../../components/DashboardSidebar";
+import { Footer } from "@/components/Footer";
 
 export default function DashboardLayout({
   children,
@@ -53,8 +54,11 @@ export default function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 bg-gray-50/50">
-           {children}
+        <main className="flex-1 overflow-y-auto bg-gray-50/50 flex flex-col">
+           <div className="flex-1 p-6 sm:p-8">
+              {children}
+           </div>
+           <Footer />
         </main>
       </div>
     </div>
