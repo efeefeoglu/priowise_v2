@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
+import { getDashboardMetrics } from "@/lib/dashboard-data";
+import { AlignmentChart } from "@/components/dashboard/AlignmentChart";
+import { ConfidenceChart } from "@/components/dashboard/ConfidenceChart";
 
 export default async function Dashboard() {
   const user = await currentUser();
   const firstName = user?.firstName || "there";
+
+  const email = user?.emailAddresses?.[0]?.emailAddress;
+  const metrics = email ? await getDashboardMetrics(email) : null;
 
   return (
     <div className="bg-white">
@@ -55,6 +61,22 @@ export default async function Dashboard() {
 
           {/* Divider */}
           <div className="my-16 border-t border-gray-200"></div>
+
+          {/* Metrics Section */}
+          {metrics && (
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8 font-rubik">Your Assessment Overview</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <AlignmentChart
+                  baseScore={metrics.baseAlignmentScore}
+                  improvedScore={metrics.improvedAlignmentScore}
+                />
+                <ConfidenceChart
+                  confidenceIndex={metrics.confidenceIndex}
+                />
+              </div>
+            </div>
+          )}
 
         </div>
       </div>
