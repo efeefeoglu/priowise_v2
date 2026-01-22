@@ -79,18 +79,21 @@ export default function DashboardSidebar({
         isCollapsed ? "w-20" : "w-64"
       }`}
     >
-      <div className="flex items-center h-16 px-4 border-b border-gray-100">
-        <button onClick={toggleSidebar} className="p-2 rounded-md hover:bg-gray-100">
-          {isCollapsed ? (
-            <PanelRight className="h-6 w-6 text-gray-500" />
-          ) : (
-            <PanelLeft className="h-6 w-6 text-gray-500" />
-          )}
-        </button>
-        <div className={`flex flex-1 items-center ${isCollapsed ? "justify-center" : ""}`}>
+      <div
+        className={`flex border-b border-gray-100 transition-all duration-300 ${
+          isCollapsed
+            ? "flex-col items-center justify-center py-4 gap-4"
+            : "flex-row items-center justify-between h-16 px-4"
+        }`}
+      >
+        <div
+          className={`flex items-center ${
+            isCollapsed ? "justify-center" : ""
+          }`}
+        >
           <Link
             href="/dashboard"
-            className={`flex items-center ${isCollapsed ? "" : "ml-2"}`}
+            className="flex items-center"
           >
             <Image
               src="/Logo-single.png"
@@ -107,6 +110,16 @@ export default function DashboardSidebar({
             </span>
           </Link>
         </div>
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-md hover:bg-gray-100"
+        >
+          {isCollapsed ? (
+            <PanelRight className="h-[15px] w-[15px] text-gray-500" />
+          ) : (
+            <PanelLeft className="h-[15px] w-[15px] text-gray-500" />
+          )}
+        </button>
       </div>
 
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
