@@ -521,7 +521,7 @@ export default function AssessmentPage() {
              />
              <label
                htmlFor="file-upload"
-               className={`p-3 rounded-full cursor-pointer transition-colors ${selectedFile ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+               className={`inline-block p-3 rounded-full cursor-pointer transition-colors ${selectedFile ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                title="Upload context file"
              >
                 <Paperclip className="w-5 h-5" />
@@ -545,7 +545,7 @@ export default function AssessmentPage() {
              <button
                type="submit"
                disabled={isLoading || !input.trim()}
-               className="absolute right-2 bottom-2 p-2 bg-brand-yellow text-black rounded-lg hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+               className="absolute right-2 bottom-4 p-2 bg-brand-yellow text-black rounded-lg hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
              >
                <Send className="w-4 h-4" />
              </button>
