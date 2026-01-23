@@ -1,7 +1,7 @@
 import Airtable from 'airtable';
 
 // Use the specific Base ID and Table ID provided
-const DASHBOARD_BASE_ID = 'c08Z8oqrIPIgq';
+const DASHBOARD_BASE_ID = 'app7c08Z8oqrIPIgq';
 const DASHBOARD_TABLE_ID = 'tblIErZyMRYEm14bg';
 
 // Ensure API key is available
