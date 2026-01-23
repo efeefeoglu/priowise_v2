@@ -20,7 +20,7 @@ export function ConfidenceChart({ confidenceIndex }: ConfidenceChartProps) {
 
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full">
-      <div className="relative w-full aspect-square max-w-[250px]">
+      <div className="relative w-full aspect-square">
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -28,8 +28,8 @@ export function ConfidenceChart({ confidenceIndex }: ConfidenceChartProps) {
                 dataKey="value"
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius="70%"
+                outerRadius="90%"
                 startAngle={90}
                 endAngle={-270}
                 stroke="none"

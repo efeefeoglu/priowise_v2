@@ -18,7 +18,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
 
   // Data for Outer Pie (Improved)
   const outerData = [
-    { value: improvedScore, fill: "#FFDE59" }, // Brand Yellow
+    { value: improvedScore, fill: "#22c55e" }, // Green
     { value: 100 - improvedScore, fill: "#f3f3f5" },
   ];
 
@@ -30,7 +30,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
 
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full">
-      <div className="relative w-full aspect-square max-w-[250px]">
+      <div className="relative w-full aspect-square">
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -38,8 +38,8 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 dataKey="value"
                 cx="50%"
                 cy="50%"
-                innerRadius={45}
-                outerRadius={60}
+                innerRadius="55%"
+                outerRadius="70%"
                 startAngle={90}
                 endAngle={-270}
                 stroke="none"
@@ -54,8 +54,8 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 dataKey="value"
                 cx="50%"
                 cy="50%"
-                innerRadius={65}
-                outerRadius={80}
+                innerRadius="75%"
+                outerRadius="90%"
                 startAngle={90}
                 endAngle={-270}
                 stroke="none"
@@ -72,7 +72,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 {baseScore}% / {improvedScore}%
             </div>
             <div className="text-sm font-medium text-gray-500 mt-1 flex items-center">
-                <span className="mr-1">Δ</span> {delta}%
+                <span className="mr-1">Δ</span> {delta > 0 ? "+" : ""}{delta}%
             </div>
         </div>
       </div>
