@@ -2,12 +2,12 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import React from 'react';
-import { ADMIN_EMAIL } from '@/lib/constants';
+import { ADMIN_EMAILS } from '@/lib/constants';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
 
-  const hasAccess = user?.emailAddresses.some(e => e.emailAddress === ADMIN_EMAIL);
+  const hasAccess = user?.emailAddresses.some(e => ADMIN_EMAILS.includes(e.emailAddress));
 
   if (!hasAccess) {
     redirect('/');

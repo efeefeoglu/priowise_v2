@@ -4,7 +4,7 @@ import { supabase } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { currentUser } from '@clerk/nextjs/server';
-import { ADMIN_EMAIL } from '@/lib/constants';
+import { ADMIN_EMAILS } from '@/lib/constants';
 
 export interface BlogPostInput {
   title: string;
@@ -16,7 +16,7 @@ export interface BlogPostInput {
 
 async function checkAdminAccess() {
   const user = await currentUser();
-  const hasAccess = user?.emailAddresses.some(e => e.emailAddress === ADMIN_EMAIL);
+  const hasAccess = user?.emailAddresses.some(e => ADMIN_EMAILS.includes(e.emailAddress));
 
   if (!hasAccess) {
     throw new Error('Unauthorized');
