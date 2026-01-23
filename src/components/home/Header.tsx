@@ -2,8 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { currentUser } from '@clerk/nextjs/server';
+import { ADMIN_EMAILS } from '@/lib/constants';
 
-export function Header() {
+export async function Header() {
+  const user = await currentUser();
+  const isAdmin = user?.emailAddresses.some(e => ADMIN_EMAILS.includes(e.emailAddress));
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
       <div className="container mx-auto px-6 py-4">
@@ -27,6 +32,14 @@ export function Header() {
             >
               Insights Blog
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-sm font-medium text-[#2d2d2d] hover:text-[#f8b62d] transition-colors mr-2 hidden sm:block"
+              >
+                Admin
+              </Link>
+            )}
             <SignedOut>
               <Link href="/sign-in">
                 <Button
