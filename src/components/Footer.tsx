@@ -28,7 +28,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="text-[#2d2d2d] mb-4">Product</h3>
+            <h3 className="text-[#2d2d2d] mb-4">Priowise</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="text-[#6a6a6a] hover:text-[#f8b62d] transition-colors">
