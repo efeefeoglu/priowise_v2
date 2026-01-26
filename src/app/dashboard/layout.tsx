@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
-import { Bell } from "lucide-react";
 import DashboardSidebar from "../../components/DashboardSidebar";
 import { Footer } from "@/components/Footer";
+import NotificationBell from "@/components/dashboard/NotificationBell";
 
 export default function DashboardLayout({
   children,
@@ -39,10 +39,7 @@ export default function DashboardLayout({
               <h1 className="text-xl font-bold text-gray-800 sm:hidden">Priowise</h1>
            </div>
            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100">
-                 <Bell className="h-6 w-6" />
-                 <span className="sr-only">View notifications</span>
-              </button>
+              <NotificationBell />
               <div className="h-8 w-px bg-gray-200 mx-2" />
               <UserButton afterSignOutUrl="/">
                 <UserButton.MenuItems>
