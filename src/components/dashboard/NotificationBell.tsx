@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, ExternalLink, Inbox } from "lucide-react";
+import { Bell, Check, Inbox } from "lucide-react";
 import { getUserNotifications, markNotificationAsRead, markAllNotificationsAsRead, type Notification } from "@/app/actions/notifications";
 import Link from "next/link";
 import { cn } from "@/components/ui/utils";
@@ -51,7 +51,6 @@ export default function NotificationBell() {
       await markNotificationAsRead(id);
     } catch (error) {
       console.error("Failed to mark as read", error);
-      // Revert if needed, but for read status it's not critical
     }
   }
 
@@ -102,15 +101,9 @@ export default function NotificationBell() {
               </div>
             ) : (
               <div className="divide-y divide-gray-50">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={cn(
-                      "p-4 transition-colors hover:bg-gray-50 flex gap-3",
-                      !notification.is_read ? "bg-blue-50/30" : "bg-white"
-                    )}
-                  >
-                    <div className="flex-1 space-y-1">
+                {notifications.map((notification) => {
+                   const Content = () => (
+                      <div className="flex-1 space-y-1">
                         <div className="flex justify-between items-start gap-2">
                              <p className={cn("text-sm font-medium leading-none", !notification.is_read ? "text-gray-900" : "text-gray-600")}>
                                 {notification.title}
@@ -119,44 +112,65 @@ export default function NotificationBell() {
                                  <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 mt-1" />
                              )}
                         </div>
-                      {notification.message && (
-                        <p className="text-xs text-gray-500 line-clamp-2">
-                          {notification.message}
-                        </p>
-                      )}
+                        {notification.message && (
+                          <p className="text-xs text-gray-500 line-clamp-2">
+                            {notification.message}
+                          </p>
+                        )}
 
-                      <div className="flex items-center gap-3 mt-2">
-                          <span className="text-[10px] text-gray-400">
-                            {new Date(notification.created_at).toLocaleDateString(undefined, {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                          </span>
+                        <div className="flex items-center gap-3 mt-2">
+                            <span className="text-[10px] text-gray-400">
+                              {new Date(notification.created_at).toLocaleDateString(undefined, {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                              })}
+                            </span>
 
-                          {notification.link && (
-                            <Link
-                                href={notification.link}
-                                className="text-xs text-blue-600 hover:underline flex items-center gap-1"
-                                onClick={() => !notification.is_read && handleMarkAsRead(notification.id)}
-                            >
-                                Open <ExternalLink className="h-3 w-3" />
-                            </Link>
-                          )}
-
-                          {!notification.is_read && !notification.link && (
-                              <button
-                                onClick={() => handleMarkAsRead(notification.id)}
-                                className="text-xs text-gray-400 hover:text-gray-600"
-                              >
-                                Mark read
-                              </button>
-                          )}
+                            {!notification.is_read && !notification.link && (
+                                <button
+                                  onClick={(e) => {
+                                      e.preventDefault(); // Prevent bubbling if needed, though this is only for div case
+                                      handleMarkAsRead(notification.id)
+                                  }}
+                                  className="text-xs text-gray-400 hover:text-gray-600 relative z-10"
+                                >
+                                  Mark read
+                                </button>
+                            )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                   );
+
+                   if (notification.link) {
+                      return (
+                        <Link
+                          key={notification.id}
+                          href={notification.link}
+                          className={cn(
+                            "block p-4 transition-colors hover:bg-gray-50 flex gap-3",
+                            !notification.is_read ? "bg-blue-50/30" : "bg-white"
+                          )}
+                          onClick={() => !notification.is_read && handleMarkAsRead(notification.id)}
+                        >
+                          <Content />
+                        </Link>
+                      );
+                   }
+
+                   return (
+                      <div
+                        key={notification.id}
+                        className={cn(
+                          "p-4 transition-colors hover:bg-gray-50 flex gap-3",
+                          !notification.is_read ? "bg-blue-50/30" : "bg-white"
+                        )}
+                      >
+                         <Content />
+                      </div>
+                   );
+                })}
               </div>
             )}
           </div>
