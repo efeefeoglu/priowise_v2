@@ -12,6 +12,7 @@ export interface BlogPostInput {
   content: string;
   featured_image: string | null;
   is_published: boolean;
+  created_at: string;
 }
 
 async function checkAdminAccess() {
