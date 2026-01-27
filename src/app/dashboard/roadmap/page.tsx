@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play, CheckSquare } 
 import { useUser } from '@clerk/nextjs';
 import RoadmapFormModal from '@/components/roadmap/RoadmapFormModal';
 import RoadmapUploadModal from '@/components/roadmap/RoadmapUploadModal';
+import { markRoadmapHasItems, markScoringRun } from '@/app/actions/onboarding';
 
 interface RoadmapRecord {
   id: string;
@@ -150,6 +151,7 @@ export default function RoadmapPage() {
           type: 'PM',
         }),
       });
+      await markScoringRun();
       alert('Scoring update started. Please check back in a few minutes.');
     } catch (err) {
       console.error('Failed to trigger scoring:', err);
@@ -180,6 +182,7 @@ export default function RoadmapPage() {
         });
         if (!res.ok) throw new Error('Failed to create record');
 
+        await markRoadmapHasItems();
         fetchRecords();
       }
       setIsModalOpen(false);
@@ -362,7 +365,8 @@ export default function RoadmapPage() {
       <RoadmapUploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
-        onSuccess={() => {
+        onSuccess={async () => {
+            await markRoadmapHasItems();
             fetchRecords();
         }}
       />
