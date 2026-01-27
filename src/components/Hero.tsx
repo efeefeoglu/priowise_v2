@@ -6,7 +6,7 @@ export function Hero() {
     <div className="relative bg-white pt-24 pb-16 overflow-hidden sm:pt-32 lg:pt-40 lg:pb-24">
       <div className="absolute top-1/2 right-0 -translate-y-1/2 h-full w-[40%] max-w-3xl hidden lg:block pointer-events-none select-none">
         <Image
-          src="/header.png"
+          src="/header-image.png"
           alt=""
           fill
           className="object-contain object-right"
