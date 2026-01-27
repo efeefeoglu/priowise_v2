@@ -18,10 +18,22 @@ interface Message {
   content: string;
 }
 
+function toLocalISOString(dateString: string | Date): string {
+  const date = new Date(dateString);
+  const pad = (num: number) => num.toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export default function PostForm({ initialData }: PostFormProps) {
   const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState(initialData?.title || '');
   const [slug, setSlug] = useState(initialData?.slug || '');
+  const [createdAt, setCreatedAt] = useState(initialData?.created_at ? toLocalISOString(initialData.created_at) : toLocalISOString(new Date()));
   const [content, setContent] = useState(initialData?.content || '');
   const [featuredImage, setFeaturedImage] = useState(initialData?.featured_image || '');
   const [isPublished, setIsPublished] = useState(initialData?.is_published || false);
@@ -120,7 +132,8 @@ export default function PostForm({ initialData }: PostFormProps) {
           slug,
           content,
           featured_image: imageUrl || null,
-          is_published: isPublished
+          is_published: isPublished,
+          created_at: new Date(createdAt).toISOString(),
         };
 
         await upsertPost(postData, initialData?.id);
@@ -155,6 +168,16 @@ export default function PostForm({ initialData }: PostFormProps) {
               onChange={(e) => setSlug(e.target.value)}
               required
               placeholder="url-friendly-slug"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Created At</label>
+            <Input
+              type="datetime-local"
+              value={createdAt}
+              onChange={(e) => setCreatedAt(e.target.value)}
+              required
             />
           </div>
 
