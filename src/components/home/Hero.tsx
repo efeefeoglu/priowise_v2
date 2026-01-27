@@ -6,7 +6,25 @@ import { Input } from '@/components/ui/input';
 
 export function Hero() {
   return (
-    <section className="relative z-10 min-h-screen flex items-center pt-20">
+    <section className="relative z-10 min-h-screen flex items-center pt-20 overflow-hidden">
+      {/* Animated background blob */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-[#ffd7a1]/40 to-[#f8b62d]/30 blur-3xl -z-10"
+        animate={{
+          borderRadius: [
+            "40% 60% 70% 30% / 40% 50% 60% 50%",
+            "60% 40% 30% 70% / 60% 30% 70% 40%",
+            "30% 60% 70% 40% / 50% 60% 30% 60%",
+            "40% 60% 70% 30% / 40% 50% 60% 50%"
+          ],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
       <div className="container mx-auto px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
@@ -69,9 +87,6 @@ export function Hero() {
             transition={{ delay: 0.4, duration: 1 }}
           >
             <div className="relative">
-              {/* Abstract blob background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffd7a1]/40 to-[#f8b62d]/30 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] blur-3xl transform scale-110" />
-
               {/* Illustration container */}
               <div className="relative flex items-center justify-center">
                 <motion.img
