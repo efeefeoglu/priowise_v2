@@ -39,10 +39,6 @@ export default function AssessmentPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isInitializing, currentQIndex]);
-
   const refreshAssessmentState = async () => {
     try {
       const response = await fetch('/api/assessment');
