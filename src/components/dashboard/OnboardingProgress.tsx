@@ -103,7 +103,7 @@ export default function OnboardingProgress({ status }: OnboardingProgressProps) 
   });
 
   return (
-    <div className="bg-white border-b border-gray-100 px-6 py-4 overflow-x-auto">
+    <div className="border-b border-gray-100 px-6 py-4">
       <div className="flex items-center min-w-max space-x-2">
         {computedSteps.map((step, idx) => (
           <React.Fragment key={step.id}>
