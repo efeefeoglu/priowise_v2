@@ -139,7 +139,7 @@ export function Hero() {
               {/* Illustration container */}
               <div className="relative flex items-center justify-center">
                 <motion.img
-                  src="/header.png"
+                  src="/header-image.png"
                   alt="Person thinking with idea"
                   className="w-full max-w-lg relative z-10"
                   animate={{ y: [0, -10, 0] }}
