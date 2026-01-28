@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { getDashboardMetrics } from "@/lib/dashboard-data";
@@ -18,7 +19,7 @@ export default async function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Hero / Welcome Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
             {/* Text Content */}
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl font-rubik">
@@ -41,21 +42,14 @@ export default async function Dashboard() {
             </div>
 
             {/* Illustration Placeholder (Target/Arrow) */}
-            <div className="relative">
-               <div className="aspect-[4/3] bg-amber-50 rounded-2xl flex items-center justify-center overflow-hidden relative">
-                   {/* Abstract representation of the target/arrow graphic */}
-                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-100 via-transparent to-transparent opacity-50"></div>
-                   <div className="text-center p-8">
-                        <div className="w-32 h-32 mx-auto bg-white rounded-full border-4 border-brand-yellow flex items-center justify-center shadow-lg mb-4">
-                            <div className="w-20 h-20 bg-brand-yellow rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </div>
-                        <p className="text-gray-400 italic">Target your roadmap</p>
-                   </div>
-               </div>
+            <div className="relative lg:w-1/2">
+              <Image
+                src="/score-mail.png"
+                alt="Priowise aligns your product roadmap with business objectives"
+                width={800}
+                height={600}
+                className="rounded-md"
+              />
             </div>
           </div>
 
