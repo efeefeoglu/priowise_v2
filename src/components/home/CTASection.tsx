@@ -3,9 +3,35 @@
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { subscribeToNewsletter } from '@/app/actions/newsletter';
 
 export function CTASection() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async () => {
+    if (!email) return;
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const result = await subscribeToNewsletter(email);
+      if (result.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMessage(result.error || 'Something went wrong');
+      }
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage('Failed to connect. Please try again.');
+    }
+  };
+
   return (
     <section className="relative z-10 py-24">
       <div className="container mx-auto px-6">
@@ -39,18 +65,42 @@ export function CTASection() {
                 roadmap to learn, launch and grow. Let's get this party started!
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  className="flex-1 bg-white border-gray-200 rounded-xl h-12"
-                />
-                <Button
-                  className="bg-[#f8b62d] hover:bg-[#e5a520] text-[#2d2d2d] px-8 h-12 rounded-xl shadow-md transition-all hover:shadow-lg"
-                >
-                  Notify Me
-                </Button>
-              </div>
+              {status === 'success' ? (
+                <div className="flex items-center justify-center gap-3 bg-green-50/80 p-6 rounded-xl border border-green-100 text-green-700 animate-in fade-in zoom-in duration-300 max-w-xl mx-auto">
+                  <CheckCircle2 className="w-8 h-8 shrink-0" />
+                  <div className="text-left">
+                     <p className="font-bold text-lg">You're on the list!</p>
+                     <p>Thanks for subscribing. We'll be in touch soon.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-w-xl mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        className="flex-1 bg-white border-gray-200 rounded-xl h-12"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={status === 'loading'}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                        />
+                        <Button
+                        className="bg-[#f8b62d] hover:bg-[#e5a520] text-[#2d2d2d] px-8 h-12 rounded-xl shadow-md transition-all hover:shadow-lg disabled:opacity-70"
+                        onClick={handleSubmit}
+                        disabled={status === 'loading'}
+                        >
+                        {status === 'loading' ? 'Joining...' : 'Notify Me'}
+                        </Button>
+                    </div>
+                    {status === 'error' && (
+                        <div className="flex items-center justify-center gap-2 text-red-600 text-sm mt-3">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>{errorMessage}</span>
+                        </div>
+                    )}
+                </div>
+              )}
 
               <p className="text-sm text-[#6a6a6a] mt-6">
                 Join 1,000+ teams already on the waitlist

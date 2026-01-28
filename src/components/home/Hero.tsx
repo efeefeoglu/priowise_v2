@@ -3,8 +3,35 @@
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { subscribeToNewsletter } from '@/app/actions/newsletter';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 export function Hero() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async () => {
+    if (!email) return;
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const result = await subscribeToNewsletter(email);
+      if (result.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMessage(result.error || 'Something went wrong');
+      }
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage('Failed to connect. Please try again.');
+    }
+  };
+
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Animated background blob */}
@@ -64,18 +91,40 @@ export function Hero() {
               <p className="text-sm text-[#6a6a6a] mb-6 leading-relaxed">
                 Join our waitlist and get priority access to Priowise. We'll notify you when we launch and share exclusive early-bird benefits that cannot be missed!
               </p>
-              <div className="flex gap-3">
-                <Input
-                  type="email"
-                  placeholder="name@example.com"
-                  className="flex-1 bg-white border-gray-200 rounded-xl"
-                />
-                <Button
-                  className="bg-[#f8b62d] hover:bg-[#e5a520] text-[#2d2d2d] px-8 rounded-xl shadow-md transition-all hover:shadow-lg"
-                >
-                  Join Now
-                </Button>
-              </div>
+
+              {status === 'success' ? (
+                <div className="flex items-center gap-3 bg-green-50 p-4 rounded-xl border border-green-100 text-green-700 animate-in fade-in zoom-in duration-300">
+                  <CheckCircle2 className="w-6 h-6 shrink-0" />
+                  <p className="font-medium">Thank you for subscribing! You're on the list.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-3">
+                    <Input
+                      type="email"
+                      placeholder="name@example.com"
+                      className="flex-1 bg-white border-gray-200 rounded-xl"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={status === 'loading'}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                    />
+                    <Button
+                      className="bg-[#f8b62d] hover:bg-[#e5a520] text-[#2d2d2d] px-8 rounded-xl shadow-md transition-all hover:shadow-lg disabled:opacity-70"
+                      onClick={handleSubmit}
+                      disabled={status === 'loading'}
+                    >
+                      {status === 'loading' ? 'Joining...' : 'Join Now'}
+                    </Button>
+                  </div>
+                  {status === 'error' && (
+                    <div className="flex items-center gap-2 text-red-600 text-sm mt-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           </motion.div>
 
