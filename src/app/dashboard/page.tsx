@@ -42,13 +42,13 @@ export default async function Dashboard() {
             </div>
 
             {/* Illustration Placeholder (Target/Arrow) */}
-            <div className="relative lg:w-1/2">
+            <div className="relative lg:w-2/5">
               <Image
                 src="/score-mail.png"
                 alt="Priowise aligns your product roadmap with business objectives"
                 width={800}
                 height={600}
-                className="rounded-md"
+                className="w-full h-auto rounded-md"
               />
             </div>
           </div>
