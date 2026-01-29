@@ -14,8 +14,6 @@ interface AlignmentChartProps {
 }
 
 export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps) {
-  const delta = improvedScore - baseScore;
-
   // Data for Outer Pie (Improved)
   const outerData = [
     { value: improvedScore, fill: "#f8b62d" }, // Brand Yellow
@@ -24,7 +22,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
 
   // Data for Inner Pie (Base)
   const innerData = [
-    { value: baseScore, fill: "#444444" }, // Dark Grey
+    { value: baseScore, fill: "#AAAAAA" }, // Light Grey
     { value: 100 - baseScore, fill: "#f9fafb" } // gray-50
   ];
 
@@ -67,13 +65,10 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
             </PieChart>
         </ResponsiveContainer>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <div className="text-xl font-bold text-gray-900">
-                {baseScore}% / {improvedScore}%
-            </div>
-            <div className="text-sm font-medium text-gray-500 mt-1 flex items-center">
-                <span className="mr-1">Δ</span> {delta > 0 ? "+" : ""}{delta}%
-            </div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none gap-2 font-bold text-gray-900">
+          <div className="text-xl">{baseScore}%</div>
+          <div className="text-xl text-gray-400">-&gt;</div>
+          <div className="text-4xl">{improvedScore}%</div>
         </div>
       </div>
 
