@@ -3,7 +3,6 @@ import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { getDashboardMetrics } from "@/lib/dashboard-data";
 import { AlignmentChart } from "@/components/dashboard/AlignmentChart";
-import { ConfidenceChart } from "@/components/dashboard/ConfidenceChart";
 
 export default async function Dashboard() {
   const user = await currentUser();
@@ -64,9 +63,6 @@ export default async function Dashboard() {
                 <AlignmentChart
                   baseScore={metrics.baseAlignmentScore}
                   improvedScore={metrics.improvedAlignmentScore}
-                />
-                <ConfidenceChart
-                  confidenceIndex={metrics.confidenceIndex}
                 />
               </div>
             </div>

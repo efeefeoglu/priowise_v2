@@ -18,14 +18,14 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
 
   // Data for Outer Pie (Improved)
   const outerData = [
-    { value: improvedScore, fill: "#22c55e" }, // Green
-    { value: 100 - improvedScore, fill: "#f3f3f5" },
+    { value: improvedScore, fill: "#f8b62d" }, // Brand Yellow
+    { value: 100 - improvedScore, fill: "#f9fafb" }, // gray-50
   ];
 
   // Data for Inner Pie (Base)
   const innerData = [
-    { value: baseScore, fill: "#030213" }, // Primary Black
-    { value: 100 - baseScore, fill: "#ececf0" }
+    { value: baseScore, fill: "#444444" }, // Dark Grey
+    { value: 100 - baseScore, fill: "#f9fafb" } // gray-50
   ];
 
   return (
@@ -39,7 +39,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 cx="50%"
                 cy="50%"
                 innerRadius="55%"
-                outerRadius="70%"
+                outerRadius="72.5%"
                 startAngle={90}
                 endAngle={-270}
                 stroke="none"
@@ -54,7 +54,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 dataKey="value"
                 cx="50%"
                 cy="50%"
-                innerRadius="75%"
+                innerRadius="72.5%"
                 outerRadius="90%"
                 startAngle={90}
                 endAngle={-270}
@@ -84,7 +84,7 @@ export function AlignmentChart({ baseScore, improvedScore }: AlignmentChartProps
                 <Info className="h-4 w-4 text-gray-400 hover:text-gray-600 transition-colors" />
             </TooltipTrigger>
             <TooltipContent>
-                <p>Description placeholder</p>
+                <p className="max-w-xs">The outer ring represents the improved alignment achievable with Priowise recommendations; the inner ring shows your current alignment.</p>
             </TooltipContent>
         </Tooltip>
       </div>
