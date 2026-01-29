@@ -21,7 +21,7 @@ export default async function Dashboard() {
           {/* Hero / Welcome Section */}
           <div className="flex flex-col-reverse lg:flex-row gap-12 items-center">
             {/* Text Content */}
-            <div className="space-y-6">
+            <div className="space-y-6 flex-1">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl font-rubik">
                 Hi, {firstName} <span className="wave">👋</span>
               </h1>
@@ -42,7 +42,7 @@ export default async function Dashboard() {
             </div>
 
             {/* Illustration Placeholder (Target/Arrow) */}
-            <div className="relative lg:w-2/5">
+            <div className="relative lg:w-2/5 shrink-0">
               <Image
                 src="/score-mail.png"
                 alt="Priowise aligns your product roadmap with business objectives"
