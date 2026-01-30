@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { getDashboardMetrics } from "@/lib/dashboard-data";
@@ -39,14 +40,33 @@ export default async function Dashboard() {
               </div>
             </div>
 
-            {/* Alignment Chart */}
+            {/* Illustration Placeholder (Target/Arrow) */}
             <div className="relative lg:w-2/5 shrink-0">
-              <AlignmentChart
-                baseScore={metrics?.baseAlignmentScore || 0}
-                improvedScore={metrics?.improvedAlignmentScore || 0}
+              <Image
+                src="/score-mail.png"
+                alt="Priowise aligns your product roadmap with business objectives"
+                width={800}
+                height={600}
+                className="w-full h-auto rounded-md"
               />
             </div>
           </div>
+
+          {/* Divider */}
+          <div className="my-16 border-t border-gray-200"></div>
+
+          {/* Metrics Section */}
+          {metrics && (
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8 font-rubik">Your Assessment Overview</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <AlignmentChart
+                  baseScore={metrics.baseAlignmentScore}
+                  improvedScore={metrics.improvedAlignmentScore}
+                />
+              </div>
+            </div>
+          )}
 
         </div>
       </div>
