@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play, CheckSquare } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle, Loader2, Upload, Play, CheckSquare, ArrowDownUp, Filter } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import RoadmapFormModal from '@/components/roadmap/RoadmapFormModal';
 import RoadmapUploadModal from '@/components/roadmap/RoadmapUploadModal';
@@ -26,6 +26,7 @@ interface RoadmapRecord {
 export default function RoadmapPage() {
   const { user } = useUser();
   const [records, setRecords] = useState<RoadmapRecord[]>([]);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +35,37 @@ export default function RoadmapPage() {
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [editingRecord, setEditingRecord] = useState<RoadmapRecord | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const sortedRecords = React.useMemo(() => {
+    return [...records].sort((a, b) => {
+      const scoreA = a.fields['Priowise Score'] || 0;
+      const scoreB = b.fields['Priowise Score'] || 0;
+
+      if (sortOrder === 'asc') {
+        return scoreA - scoreB;
+      } else {
+        return scoreB - scoreA;
+      }
+    });
+  }, [records, sortOrder]);
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const allPriorities = React.useMemo(() => [...new Set(records.map(r => r.fields.Priority).filter(Boolean))], [records]);
+  const allTags = React.useMemo(() => [...new Set(records.flatMap(r => r.fields.Tag?.split(',') || []).map(t => t.trim()).filter(Boolean))], [records]);
+
+  const filteredRecords = React.useMemo(() => {
+    return sortedRecords.filter(record => {
+      const priorityMatch = selectedPriorities.length === 0 || selectedPriorities.includes(record.fields.Priority || '');
+      const tagMatch = selectedTags.length === 0 || record.fields.Tag?.split(',').some(tag => selectedTags.includes(tag.trim()));
+      return priorityMatch && tagMatch;
+    });
+  }, [sortedRecords, selectedPriorities, selectedTags]);
 
   const fetchRecords = async () => {
     try {
@@ -224,6 +256,51 @@ export default function RoadmapPage() {
               <Trash2 size={20} />
               Delete selected
             </button>
+            <div className="relative">
+              <button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                  <Filter size={20} />
+                  Filter by
+              </button>
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div className="p-4">
+                    <h4 className="font-semibold text-gray-800">Priority</h4>
+                    <div className="mt-2 space-y-2">
+                      {allPriorities.map(priority => (
+                        <label key={priority} className="flex items-center">
+                          <input type="checkbox" className="h-4 w-4 rounded border-gray-300 text-brand-yellow focus:ring-brand-yellow"
+                            checked={selectedPriorities.includes(priority)}
+                            onChange={() => {
+                              setSelectedPriorities(prev => prev.includes(priority) ? prev.filter(p => p !== priority) : [...prev, priority]);
+                            }}
+                          />
+                          <span className="ml-2 text-sm text-gray-700">{priority}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-200">
+                    <h4 className="font-semibold text-gray-800">Tags</h4>
+                    <div className="mt-2 space-y-2">
+                      {allTags.map(tag => (
+                        <label key={tag} className="flex items-center">
+                          <input type="checkbox" className="h-4 w-4 rounded border-gray-300 text-brand-yellow focus:ring-brand-yellow"
+                            checked={selectedTags.includes(tag)}
+                            onChange={() => {
+                              setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+                            }}
+                          />
+                          <span className="ml-2 text-sm text-gray-700">{tag}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleRunScoring}
               className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg hover:bg-yellow-400 transition-colors shadow-sm"
@@ -264,22 +341,26 @@ export default function RoadmapPage() {
                 </th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 w-1/4">Name</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 w-1/3">Description</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-700">Status</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Priority</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-700">Weighted Score</th>
+                <th className="px-6 py-4 text-sm font-semibold text-gray-700">
+                    <button onClick={toggleSortOrder} className="flex items-center gap-1">
+                        Weighted Score
+                        <ArrowDownUp size={16} />
+                    </button>
+                </th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700">Tags</th>
                 <th className="px-6 py-4 text-sm font-semibold text-gray-700 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {records.length === 0 ? (
+              {filteredRecords.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                     No features found. Start by adding one!
                   </td>
                 </tr>
               ) : (
-                records.map((record) => (
+                filteredRecords.map((record) => (
                   <tr key={record.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 text-sm">
                       <input
@@ -295,11 +376,6 @@ export default function RoadmapPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <p className="line-clamp-2">{record.fields.Description}</p>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {record.fields.Status || 'Created'}
-                      </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {record.fields.Priority || '-'}
