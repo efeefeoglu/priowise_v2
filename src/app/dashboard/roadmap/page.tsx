@@ -56,7 +56,10 @@ export default function RoadmapPage() {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  const allPriorities = React.useMemo(() => [...new Set(records.map(r => r.fields.Priority).filter(Boolean))], [records]);
+  const allPriorities = React.useMemo(
+    () => [...new Set(records.map(r => r.fields.Priority).filter((priority): priority is string => Boolean(priority)))],
+    [records]
+  );
   const allTags = React.useMemo(() => [...new Set(records.flatMap(r => r.fields.Tag?.split(',') || []).map(t => t.trim()).filter(Boolean))], [records]);
 
   const filteredRecords = React.useMemo(() => {
