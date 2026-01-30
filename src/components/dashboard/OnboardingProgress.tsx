@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { Check, ChevronRight } from 'lucide-react';
 import { OnboardingStatus } from '@/lib/onboarding-service';
-import { usePathname } from 'next/navigation';
 
 interface Step {
   id: string;
@@ -20,7 +19,6 @@ interface OnboardingProgressProps {
 }
 
 export default function OnboardingProgress({ status }: OnboardingProgressProps) {
-  const pathname = usePathname();
 
   // Define steps
   // Logic:
@@ -67,7 +65,7 @@ export default function OnboardingProgress({ status }: OnboardingProgressProps) 
     },
     {
       id: 'summary',
-      label: 'Summary',
+      label: 'Summary Reports',
       href: '/dashboard/summary',
       isCompleted: false, // It's the destination
       isCurrent: status.hasRunScoring,
